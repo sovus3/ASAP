@@ -1,0 +1,1423 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icia.web.dao.AdminDao">
+
+<resultMap type="com.icia.web.model.Admin" id="adminResultMap">
+	<id column="ADM_ID" property="admId" />
+	<result column="ADM_PWD" property="admPwd" />
+	<result column="ADM_LEVEL" property="admLevel" />
+	<result column="ADM_LEVEL_NAME" property="admLevelName" />
+</resultMap>
+
+<resultMap type="com.icia.web.model.VoteUpload" id="voteUploadToAucSelectResultMap">
+	<id column="VR_SEQ" property="vrSeq"/>
+	<result column="USER_ID" property="userId"/>
+	<result column="CATEGORY_NO" property="categoryNo"/>
+	<result column="VR_TITLE" property="vrTitle"/>
+	<result column="VR_CONTENT" property="vrContent"/>
+	<result column="VR_TOTAL_CNT" property="vrTotalCnt"/>
+	<result column="VR_START_PRICE" property="vrStartPrice"/>
+	<result column="STATUS" property="status"/>
+	<result column="REG_DATE" property="regDate"/>
+	<result column="VR_START_DATE" property="vrStartDate"/>
+	<result column="VR_END_DATE" property="vrEndDate"/>
+	<result column="AUC_SEQ" property="aucSeq"/>
+</resultMap>
+
+<resultMap type="com.icia.web.model.AucCur" id="aucCurListResultMap">
+	<id column="AUC_CUR_SEQ" property="aucCurSeq"/>
+	<result column="AUC_SEQ" property="aucSeq"/>
+	<result column="USER_ID" property="userId"/>
+	<result column="AUC_CUR_BUY_TIME" property="aucCurBuyTime"/>
+	<result column="AUC_CUR_PRICE" property="aucCurPrice"/>
+	<result column="STATUS" property="status"/>
+	<result column="VR_TITLE" property="vrTitle"/>
+	<result column="CATEGORY_NO" property="categoryNo"/>
+</resultMap>
+
+<resultMap type="com.icia.web.model.Auction" id="auctionListSelectResultMap">
+	<id column="AUC_SEQ" property="aucSeq"/>
+	<result column="CATEGORY_NO" property="categoryNo"/>
+	<result column="ART_USER_ID" property="artUserId"/>
+	<result column="AUC_START_TIME" property="aucStartTime"/>
+	<result column="AUC_BUY_PRICE" property="aucBuyPrice"/>
+	<result column="STATUS" property="status"/>
+	<result column="VR_SEQ" property="vrSeq"/>
+	<result column="VR_START_PRICE" property="vrStartPrice"/>
+	<result column="VR_TITLE" property="vrTitle"/>
+	<result column="USER_ID" property="userId"/>
+</resultMap>
+
+<resultMap type="com.icia.web.model.QnaBoard" id="QnaBoardResultMap">
+	<id column="QA_SEQ" property ="qaSeq"/>
+	<result column="USER_ID" property ="userId"/>
+	<result column="USER_NICK" property ="userNick"/>
+	<result column="ADM_ID" property ="admId"/>
+	<result column="QA_TITLE" property ="qaTitle"/>
+	<result column="QA_CONTENT" property ="qaContent"/>
+	<result column= "QA_GROUP" property ="qaGroup"/>
+	<result column= "QA_ORDER" property ="qaOrder"/>
+	<result column= "QA_INDENT" property ="qaIndent"/>
+	<result column= "QA_PARENT" property ="qaParent"/>
+	<result column= "REG_DATE" property ="regDate"/>
+	<result column= "STATUS" property ="status"/>
+</resultMap>
+
+<resultMap type="com.icia.web.model.Pay" id="PayResultMap">
+	<id column="ORDER_NO" property="orderNo" />
+	<result column="USER_ID" property="userId" />
+	<result column="PAY_REAL_PRICE" property="payRealPrice" />
+	<result column="PAY_POINT_PRICE" property="payPointPrice" />
+	<result column="PAY_TOTAL_PRICE" property="payTotalPrice" />
+	<result column="STATUS" property="status" />
+	<result column="REG_DATE" property="regDate" />
+	<result column="PRODUCT_NAME" property="productName" />
+	<result column="PRODUCT_SEQ" property="productSeq" />
+	<result column="cnt" property="cnt" />
+</resultMap>
+
+<resultMap type="com.icia.web.model.Product" id="ProductResultMap">
+	<id column="PRODUCT_SEQ" property="productSeq" />
+	<result column="PRODUCT_NAME" property="productName" />
+	<result column="PRODUCT_PRICE" property="productPrice" />
+	<result column="PRODUCT_QUANTITY" property="productQuantity" />
+	<result column="STATUS" property="status" />
+	<result column="PRODUCT_START_DATE" property="productStartDate" />
+	<result column="PRODUCT_END_DATE" property="productEndDate" />
+	<result column="PRODUCT_DETAIL" property="productDetail"/>
+</resultMap>
+
+<!-- 주문 상세 내역 -->
+<resultMap type="com.icia.web.model.OrderDetail" id="OrderDetailResultMap">
+	<id column="USER_ID" property="userId" />
+	<result column="ORDER_NO" property="orderNo" />
+	<result column="PRODUCT_SEQ" property="productSeq" />
+	<result column="ORDER_DETAIL_QUANTITY" property="orderDetailQuantity" />
+	<result column="ORDER_DETAIL_PRICE" property="orderDetailPrice" />
+	<result column="STATUS" property="status" />	
+	<result column="PRODUCT_NAME" property="productName" />
+	<result column="REVIEW_SEQ" property="reviewSeq" />
+	<result column="REG_DATE" property="regDate" />
+</resultMap>
+
+<resultMap type="com.icia.web.model.User" id="userListResultMap">
+	<id column="USER_ID" property="userId" />
+	<result column="USER_PWD" property="userPwd" />
+	<result column="USER_NICK" property="userNick" />
+	<result column="USER_NAME" property="userName" />
+	<result column="USER_PHONE" property="userPhone" />
+	<result column="USER_ADDR" property="userAddr" />
+	<result column="USER_EMAIL" property="userEmail" />
+	<result column="USER_CODE" property="userCode" />
+	<result column="STATUS" property="status" />
+	<result column="USER_FEE" property="userFee" />
+	<result column="USER_CHARGE" property="userCharge" />
+	<result column="USER_POSTCODE" property="userPostcode" />
+</resultMap>
+
+<!-- 투표업로드 -->
+<resultMap type="com.icia.web.model.VoteUpload" id="admVlResultMap">
+<id column="VR_SEQ" property="vrSeq"/>
+   <result column="USER_ID" property="userId"/>
+   <result column="USER_NAME" property="userName"/>
+ 	<result column="CATEGORY_NO" property="categoryNo"/>
+ 	<result column="CATEGORY_NAME" property="categoryName"/>
+ 	<result column="VR_TITLE" property="vrTitle"/>
+ 	<result column="VR_CONTENT" property="vrContent"/>
+ 	<result column="VR_TOTAL_CNT" property="vrTotalCnt"/>
+ 	<result column="VR_START_PRICE" property="vrStartPrice"/>
+ 	<result column="STATUS" property="status"/>
+ 	<result column="REG_DATE" property="regDate"/>
+ 	<result column="VR_START_DATE" property="vrStartDate"/>
+   <result column="VR_END_DATE" property="vrEndDate"/>
+   <result column="VL_USER_ID" property="vlUserId"/>
+</resultMap>
+
+<!-- 입찰 내역 -->
+<resultMap type="com.icia.web.model.AucEventCur" id="admAeCurResultMap">
+	<id column="AE_CUR_SEQ" property="aeCurSeq"/>
+	<result column="AE_SEQ" property="aeSeq"/>
+	<result column="AE_TITLE" property="aeTitle"/>
+	<result column="AE_PRODUCT_TITLE" property="aeProductTitle"/>
+	<result column="USER_ID" property="userId"/>
+	<result column="AE_CUR_PRICE" property="aeCurPrice"/>
+	<result column="AE_CUR_BUY_TIME" property="aeCurBuyTime"/>
+	<result column="STATUS" property="status"/>
+</resultMap>
+
+<!-- 이벤트 경매 resultMap -->
+<resultMap type="com.icia.web.model.AucEvent" id="admAeResultMap">
+	<id column="AE_SEQ" property="aeSeq"/>
+	<result column="ADM_ID" property="admId"/>
+	<result column="AE_START_TIME" property="aeStartTime"/>
+	<result column="AE_END_TIME" property="aeEndTime"/>
+	<result column="AE_BUY_PRICE" property="aeBuyPrice"/>
+	<result column="AE_TITLE" property="aeTitle"/>
+	<result column="STATUS" property="status"/>
+	<result column="AE_START_PRICE" property="aeStartPrice"/>
+	<result column="AE_PRODUCT_TITLE" property="aeProductTitle"/>	
+</resultMap>
+
+<resultMap type="com.icia.web.model.VoteList" id="admVoteListResultMap">
+   <result column="VR_SEQ" property="vrSeq"/>
+   <result column="VL_USER_ID" property="vlUserId"/>
+   <result column="VOTE_DATE" property="voteDate"/>  
+</resultMap>
+
+
+<!-- 관리자 조회 -->
+<select id="adminSelect" parameterType="String" resultMap="adminResultMap">
+	SELECT ADM_ID,
+		   NVL(ADM_PWD, '') AS ADM_PWD,
+		   NVL(ADM_LEVEL, '') AS ADM_LEVEL,
+		   NVL(ADM_LEVEL_NAME, '') AS ADM_LEVEL_NAME
+	  FROM ADMIN
+	 WHERE ADM_ID = #{value}
+</select>
+
+<!-- 경매 -->
+<select id="voteUploadToAucTotalCnt" parameterType="com.icia.web.model.VoteUpload"  resultType="long">
+ SELECT COUNT(VR_SEQ) AS TOTALCOUNT
+  FROM (SELECT VR_SEQ,
+              ROW_NUMBER() OVER(PARTITION BY CATEGORY_NO, VR_START_DATE ORDER BY VR_TOTAL_CNT DESC, VR_START_PRICE ASC) AS RNUM
+         FROM VOTE_UPLOAD
+        WHERE STATUS = 'N'
+       <if test='vrStartDate != null and vrStartDate != ""'>
+          AND VR_START_DATE = #{vrStartDate}
+       </if>
+       )  
+ WHERE RNUM = 1
+ 
+</select>
+
+<select id="voteUploadToAucSelect" parameterType="com.icia.web.model.VoteUpload" resultMap="voteUploadToAucSelectResultMap">
+SELECT TOTALROWNUM,
+       AUC_SEQ,
+       RNUM,
+       VR_SEQ,
+       USER_ID,
+       CATEGORY_NO,
+       VR_TITLE,
+       VR_CONTENT,
+       VR_TOTAL_CNT,
+       VR_START_PRICE,
+       STATUS,
+       REG_DATE,
+       VR_START_DATE,
+       VR_END_DATE
+FROM(SELECT ROWNUM AS TOTALROWNUM,
+            AUC_SEQ,
+            RNUM,
+            VR_SEQ,
+            USER_ID,
+            CATEGORY_NO,
+            VR_TITLE,
+            VR_CONTENT,
+            VR_TOTAL_CNT,
+            VR_START_PRICE,
+            STATUS,
+            REG_DATE,
+            VR_START_DATE,
+            VR_END_DATE
+     FROM(SELECT A.AUC_SEQ AS AUC_SEQ,
+                 V.VR_SEQ AS VR_SEQ,
+                 V.USER_ID AS USER_ID,
+                 V.CATEGORY_NO AS CATEGORY_NO,
+                 V.VR_TITLE AS VR_TITLE,
+                 V.VR_CONTENT AS VR_CONTENT,
+                 V.VR_TOTAL_CNT AS VR_TOTAL_CNT,
+                 V.VR_START_PRICE AS VR_START_PRICE,
+                 V.STATUS AS STATUS,
+                 V.REG_DATE AS REG_DATE,
+                 V.VR_START_DATE AS VR_START_DATE,
+                 V.VR_END_DATE AS VR_END_DATE,
+                 ROW_NUMBER() OVER(PARTITION BY V.CATEGORY_NO, V.VR_START_DATE ORDER BY V.VR_TOTAL_CNT DESC, V.VR_START_PRICE ASC) AS RNUM
+            FROM VOTE_UPLOAD V, AUCTION A
+           WHERE V.STATUS = 'N'
+            AND A.VR_SEQ(+) = V.VR_SEQ
+          <if test='vrStartDate != null and vrStartDate != ""'>
+             AND VR_START_DATE = #{vrStartDate}
+          </if>
+           ORDER BY VR_START_DATE DESC, CATEGORY_NO ASC)
+    WHERE RNUM = 1)
+WHERE TOTALROWNUM <![CDATA[>=]]> #{startRow} AND TOTALROWNUM <![CDATA[<=]]> #{endRow}
+</select>
+
+<select id="voteUploadToAucInsert" parameterType="long" resultMap="voteUploadToAucSelectResultMap">
+SELECT VR_SEQ,
+	   USER_ID,
+	   CATEGORY_NO,
+	   VR_TITLE,
+	   VR_CONTENT,
+	   VR_TOTAL_CNT,
+	   VR_START_PRICE,
+	   STATUS,
+	   REG_DATE,
+	   VR_START_DATE,
+	   VR_END_DATE
+  FROM VOTE_UPLOAD
+ WHERE VR_SEQ = #{value}
+</select>
+
+<insert id="auctionInsertToR" parameterType="com.icia.web.model.Auction">
+<selectKey resultType="long" keyProperty="aucSeq" order="BEFORE">
+SELECT SEQ_AUC_SEQ.NEXTVAL FROM DUAL
+</selectKey>
+INSERT INTO AUCTION (AUC_SEQ,
+                     CATEGORY_NO,
+                     VR_SEQ,
+                     USER_ID,
+                     STATUS,
+                     AUC_START_TIME,
+                     AUC_END_TIME,
+                     AUC_BUY_PRICE) 
+VALUES (#{aucSeq}, #{categoryNo} ,#{vrSeq} , #{userId}, 'R', #{aucStartTime}, #{aucEndTime}, 0)
+</insert>
+
+<select id="aucCurListSelect" parameterType="com.icia.web.model.AucCur" resultMap="aucCurListResultMap">
+SELECT RNUM,
+       AUC_CUR_SEQ,
+       AUC_SEQ,
+       USER_ID,
+       AUC_CUR_BUY_TIME,
+       AUC_CUR_PRICE,
+       STATUS,
+       VR_TITLE,
+       CATEGORY_NO
+FROM(SELECT ROWNUM AS RNUM,
+            AUC_CUR_SEQ,
+            AUC_SEQ,
+            USER_ID,
+            AUC_CUR_BUY_TIME,
+            AUC_CUR_PRICE,
+            STATUS,
+            VR_TITLE,
+            CATEGORY_NO
+       FROM(SELECT C.AUC_CUR_SEQ AS AUC_CUR_SEQ,
+                   C.AUC_SEQ AS AUC_SEQ,
+                   C.USER_ID AS USER_ID,
+                   TO_CHAR(AUC_CUR_BUY_TIME, 'YYYY.MM.DD HH24:MI:SS') AS AUC_CUR_BUY_TIME,
+                   C.AUC_CUR_PRICE AS AUC_CUR_PRICE,
+                   C.STATUS AS STATUS,
+                   VR_TITLE,
+                   CATEGORY_NO
+              FROM AUC_CUR C,(SELECT VR_TITLE, 
+              						 AUC_SEQ, 
+              						 AUC_START_TIME, 
+              						 V.CATEGORY_NO AS CATEGORY_NO
+                                FROM AUCTION A, VOTE_UPLOAD V
+                               WHERE A.VR_SEQ = V.VR_SEQ
+						       <if test='aucStartTime != null and aucStartTime != ""'>
+						         AND TO_CHAR(AUC_START_TIME, 'YYYYMM') = #{aucStartTime}
+						       </if>
+                              )E
+             WHERE C.AUC_SEQ = E.AUC_SEQ
+<if test='searchType != null and searchType != "" and searchValue != null and searchValue != ""'>
+	<choose>
+		<when test='searchType == "1"'>
+                AND E.VR_TITLE LIKE '%' || #{searchValue} || '%'
+    	</when>
+    	<when test='searchType == "2"' >  
+  				AND C.USER_ID LIKE '%' || #{searchValue} || '%'
+    	</when>
+	</choose>
+</if>
+         ORDER BY AUC_CUR_BUY_TIME DESC, C.AUC_SEQ ASC))
+WHERE RNUM <![CDATA[>=]]> #{startRow} AND RNUM <![CDATA[<=]]> #{endRow}
+</select>
+
+
+<select id="aucCurTotalCount" parameterType="com.icia.web.model.AucCur" resultType="long">
+SELECT COUNT(AUC_CUR_SEQ) AS TOTAL_COUNT
+  FROM AUC_CUR C,(SELECT AUC_SEQ,
+  						 VR_TITLE
+                    FROM AUCTION A, VOTE_UPLOAD V
+                   WHERE A.VR_SEQ = V.VR_SEQ
+                   <if test='aucStartTime != null and aucStartTime != ""'>
+			         AND TO_CHAR(AUC_START_TIME, 'YYYYMM') = #{aucStartTime}
+			       </if>
+                 )E
+WHERE C.AUC_SEQ = E.AUC_SEQ
+<if test='searchType != null and searchType != "" and searchValue != null and searchValue != ""'>
+	<choose>
+		<when test='searchType == "1"'>
+                AND E.VR_TITLE LIKE '%' || #{searchValue} || '%'
+    	</when>
+    	<when test='searchType == "2"' >  
+  				AND C.USER_ID LIKE '%' || #{searchValue} || '%'
+    	</when>
+	</choose>
+</if>
+</select>
+
+<select id="auctionListSelect" parameterType="com.icia.web.model.Auction" resultMap="auctionListSelectResultMap">
+SELECT RNUM,
+       VR_SEQ,
+       AUC_SEQ,
+       CATEGORY_NO,
+       VR_TITLE,
+       ART_USER_ID,
+       VR_START_PRICE,
+       AUC_BUY_PRICE,
+       USER_ID,
+       AUC_START_TIME
+FROM(SELECT ROWNUM AS RNUM,
+            VR_SEQ,
+            AUC_SEQ,
+            CATEGORY_NO,
+            VR_TITLE,
+            ART_USER_ID,
+            VR_START_PRICE,
+            AUC_BUY_PRICE,
+            USER_ID,
+            AUC_START_TIME
+       FROM(SELECT E.AUC_SEQ AS AUC_SEQ,
+                   V.VR_SEQ AS VR_SEQ,
+                   V.CATEGORY_NO AS CATEGORY_NO,
+                   V.VR_TITLE AS VR_TITLE,
+                   V.USER_ID AS ART_USER_ID,
+                   V.VR_START_PRICE AS VR_START_PRICE,
+                   E.AUC_BUY_PRICE AS AUC_BUY_PRICE,
+                   E.USER_ID AS USER_ID,
+                   TO_CHAR(E.AUC_START_TIME, 'YYYY.MM.DD') AS AUC_START_TIME
+              FROM VOTE_UPLOAD V, (SELECT A.AUC_SEQ AS AUC_SEQ,
+                                          A.VR_SEQ AS VR_SEQ,
+                                          AUC_BUY_PRICE,
+                                          C.USER_ID AS USER_ID,
+                                          AUC_START_TIME
+                                     FROM AUC_CUR C, AUCTION A
+                                   WHERE C.STATUS = 'Y'
+                                     AND C.AUC_SEQ = A.AUC_SEQ
+                           <if test='searchValue != null and searchValue != ""'>
+                             AND C.USER_ID LIKE '%' || #{searchValue} || '%'
+                           </if>
+                           <if test='aucStartTime != null and aucStartTime != ""'>
+                               AND TO_CHAR(AUC_START_TIME, 'YYYYMM') = #{aucStartTime}
+                           </if>
+                                   )E
+             WHERE V.VR_SEQ = E.VR_SEQ
+          ORDER BY AUC_START_TIME DESC, CATEGORY_NO))
+WHERE RNUM <![CDATA[>=]]> #{startRow} AND RNUM <![CDATA[<=]]> #{endRow}
+</select>
+
+<select id="auctionTotalCount" parameterType="com.icia.web.model.Auction" resultType="long">
+SELECT COUNT(E.AUC_CUR_SEQ) AS TOTALCOUNT
+  FROM VOTE_UPLOAD V, (SELECT C.AUC_CUR_SEQ AS AUC_CUR_SEQ,
+                              A.AUC_SEQ AS AUC_SEQ,
+                              A.VR_SEQ AS VR_SEQ,
+                              AUC_BUY_PRICE,
+                              C.USER_ID AS USER_ID,
+                              AUC_START_TIME
+                         FROM AUC_CUR C, AUCTION A
+                       WHERE C.STATUS = 'Y'
+                         AND C.AUC_SEQ = A.AUC_SEQ
+                            <if test='searchType != null and searchType != ""'>
+                                AND C.USER_ID LIKE '%' || #{searchValue} || '%'
+                            </if>
+                            <if test='aucStartTime != null and aucStartTime != ""'>
+                                AND TO_CHAR(AUC_START_TIME, 'YYYYMM') = #{aucStartTime}
+                            </if> 
+                       )E
+ WHERE V.VR_SEQ = E.VR_SEQ
+ORDER BY AUC_START_TIME DESC, CATEGORY_NO
+</select>
+
+<!-- 게시판 -->
+<!-- 답변 없는 게시물만 보이게 -->
+<select id="AdminQnaNo" parameterType="com.icia.web.model.QnaBoard" resultMap="QnaBoardResultMap">
+SELECT QA_SEQ,
+	   USER_ID,
+	   ADM_ID,
+	   QA_TITLE,
+	   QA_CONTENT,
+	   QA_GROUP,
+	   QA_ORDER,
+	   QA_INDENT,
+	   QA_PARENT,
+	   REG_DATE,
+	   STATUS
+FROM(SELECT ROWNUM RNUM,
+			QA_SEQ,
+			USER_ID,
+			ADM_ID,
+			QA_TITLE,
+			QA_CONTENT,
+			QA_GROUP,
+			QA_ORDER,
+			QA_INDENT,
+			QA_PARENT,
+			REG_DATE,
+			STATUS
+	 FROM(SELECT QA_SEQ,
+			     NVL(USER_ID, '') AS USER_ID,
+			     NVL(ADM_ID, '') AS ADM_ID,
+			     NVL(QA_TITLE, '') AS QA_TITLE,
+			     NVL(QA_CONTENT, '') AS QA_CONTENT,
+			     NVL(QA_GROUP, '') AS QA_GROUP,
+			     NVL(QA_ORDER, '') AS QA_ORDER,
+			     NVL(QA_INDENT, '') AS QA_INDENT,
+			     NVL(QA_PARENT, '') AS QA_PARENT,
+			     NVL(TO_CHAR(REG_DATE, 'YYYY.MM.DD'), '') AS REG_DATE,
+			     NVL(STATUS, 'N') AS STATUS
+		  FROM QNA_BOARD
+		  WHERE QA_GROUP IN (SELECT QA_GROUP
+						       FROM QNA_BOARD
+						      GROUP BY QA_GROUP
+						     HAVING COUNT(QA_GROUP) = 1
+						     )
+<if test='searchType != null and searchType != "" and searchValue != null and searchValue != "" '>             
+	<choose>
+		<when test='searchType == "1"'>           
+			AND QA_TITLE LIKE '%' || #{searchValue} || '%'
+		</when>
+		<when test='searchType == "2"'>       
+			AND DBMS_LOB.INSTR(QA_CONTENT, #{searchValue} )>0
+		</when>      
+	</choose>          
+</if> 
+		  ORDER BY QA_GROUP DESC, QA_ORDER ASC
+		 )
+	)
+WHERE RNUM <![CDATA[>=]]> #{startRow}
+  AND RNUM <![CDATA[<=]]> #{endRow}
+</select>
+
+<!-- 답변 없는 게시물 총 개수 -->
+<select id="AdminQnaNoCnt" parameterType="com.icia.web.model.QnaBoard" resultType ="int">
+SELECT COUNT (QA_SEQ) AS CNT
+  FROM QNA_BOARD
+ WHERE QA_GROUP IN (SELECT QA_GROUP
+				      FROM QNA_BOARD
+				  GROUP BY QA_GROUP
+				    HAVING COUNT(QA_GROUP) = 1)
+</select>
+
+<!-- 답변있는 게시물만 보이게 -->
+<select id="AdminQnaYes" parameterType="com.icia.web.model.QnaBoard" resultMap="QnaBoardResultMap">
+SELECT QA_SEQ,
+	   USER_ID,
+	   ADM_ID,
+	   QA_TITLE,
+	   QA_CONTENT,
+	   QA_GROUP,
+	   QA_ORDER,
+	   QA_INDENT,
+	   QA_PARENT,
+	   REG_DATE,
+	   STATUS
+FROM(SELECT ROWNUM RNUM,
+			QA_SEQ,
+			USER_ID,
+			ADM_ID,
+			QA_TITLE,
+			QA_CONTENT,
+			QA_GROUP,
+			QA_ORDER,
+			QA_INDENT,
+			QA_PARENT,
+			REG_DATE,
+			STATUS
+	 FROM(SELECT QA_SEQ,
+			     NVL(USER_ID, '') AS USER_ID,
+			     NVL(ADM_ID, '') AS ADM_ID,
+			     NVL(QA_TITLE, '') AS QA_TITLE,
+			     NVL(QA_CONTENT, '') AS QA_CONTENT,
+			     NVL(QA_GROUP, '') AS QA_GROUP,
+			     NVL(QA_ORDER, '') AS QA_ORDER,
+			     NVL(QA_INDENT, '') AS QA_INDENT,
+			     NVL(QA_PARENT, '') AS QA_PARENT,
+			     NVL(TO_CHAR(REG_DATE, 'YYYY.MM.DD'), '') AS REG_DATE,
+			     NVL(STATUS, 'N') AS STATUS
+		  FROM QNA_BOARD
+		  WHERE QA_GROUP IN (SELECT QA_GROUP
+						     FROM QNA_BOARD
+						     GROUP BY QA_GROUP
+						     HAVING COUNT(QA_GROUP) > 1
+							)
+<if test='searchType != null and searchType != "" and searchValue != null and searchValue != "" '>             
+	<choose>
+		<when test='searchType == "1"'>           
+			AND QA_TITLE LIKE '%' || #{searchValue} || '%'
+		</when>
+		<when test='searchType == "2"'>       
+			AND DBMS_LOB.INSTR(QA_CONTENT, #{searchValue} )>0
+		</when>      
+	</choose>          
+</if>     
+		  ORDER BY QA_GROUP DESC, QA_ORDER ASC
+		 )
+	)
+WHERE RNUM <![CDATA[>=]]> #{startRow}
+	AND RNUM <![CDATA[<=]]> #{endRow}
+</select>
+
+<!-- 답변 있는 게시물 총 개수 -->
+<select id="AdminQnaYesCnt" parameterType="com.icia.web.model.QnaBoard" resultType ="int">
+SELECT COUNT (QA_SEQ) AS CNT
+FROM QNA_BOARD
+WHERE QA_GROUP IN (SELECT QA_GROUP
+				   FROM QNA_BOARD
+				   GROUP BY QA_GROUP
+				   HAVING COUNT(QA_GROUP) > 1)
+</select>
+
+<select id="payList" parameterType="com.icia.web.model.Pay" resultMap="PayResultMap">
+ SELECT ORDER_NO, 
+	    REG_DATE,
+	    USER_ID,  
+	    PRODUCT_SEQ,
+	    PRODUCT_NAME, 
+	    PAY_TOTAL_PRICE,
+	    PAY_POINT_PRICE,
+	    PAY_REAL_PRICE,
+	    STATUS,
+	    CNT
+	FROM(SELECT ROWNUM AS RNUM, 
+		        B.ORDER_NO AS ORDER_NO, 
+		        NVL(TO_CHAR(B.REG_DATE,'YYYY.MM.DD HH24:MI:SS'),'') AS REG_DATE,
+		        NVL(B.USER_ID, '') AS USER_ID, 
+		        NVL(B.PRODUCT_SEQ,0) AS PRODUCT_SEQ,
+		        NVL(P.PRODUCT_NAME, '') AS PRODUCT_NAME, 
+		        NVL(B.PAY_TOTAL_PRICE, 0) AS PAY_TOTAL_PRICE, 
+		        NVL(B.PAY_POINT_PRICE, 0) AS PAY_POINT_PRICE, 
+		        NVL(B.PAY_REAL_PRICE, 0) AS PAY_REAL_PRICE, 
+		        NVL(B.STATUS, 'N') AS STATUS,
+		        NVL(B.CNT, 1) AS CNT
+	    FROM PRODUCT P,(SELECT A.ORDER_NO,         
+				               A.REG_DATE,
+				               A.USER_ID, 
+				               A.PRODUCT_SEQ, 
+				               A.PAY_REAL_PRICE, 
+				               A.PAY_POINT_PRICE, 
+				               A.PAY_TOTAL_PRICE,
+				               A.STATUS,
+				               A.CNT
+				          FROM(SELECT ROW_NUMBER() OVER(PARTITION BY P.ORDER_NO, P.PAY_REAL_PRICE ORDER BY P.ORDER_NO DESC) AS RNK, 
+					                   P.ORDER_NO, 
+					                   P.REG_DATE,
+					                   O.PRODUCT_SEQ,
+					                   P.USER_ID, 
+					                   P.PAY_REAL_PRICE, 
+					                   P.PAY_POINT_PRICE, 
+					                   P.PAY_TOTAL_PRICE,
+					                   P.STATUS,
+					                  (SELECT COUNT(D.ORDER_NO) FROM ORDER_DETAIL  D WHERE O.ORDER_NO = D.ORDER_NO) AS CNT
+							             FROM PAY P, ORDER_DETAIL O
+							            WHERE O.ORDER_NO = P.ORDER_NO
+				                	   ) A 
+					             WHERE RNK = 1 
+					             ORDER BY A.ORDER_NO DESC
+					            ) B 
+	    WHERE P.PRODUCT_SEQ = B.PRODUCT_SEQ 
+	    <if test='searchType != null and searchType != "" and searchValue != null and searchValue != "" '>             
+	    <choose>
+	    	<when test='searchType == "1"'>           
+	               AND B.ORDER_NO LIKE '%' || #{searchValue} || '%'
+	        </when>
+	        <when test='searchType == "2"'>       
+	               AND B.REG_DATE LIKE '%' || #{searchValue} || '%'
+	        </when>
+	        <when test='searchType == "3"'>
+               AND B.USER_ID LIKE '%' || #{searchValue} || '%'
+	        </when>
+	        <when test='searchType == "4"'>
+	               AND UPPER(P.PRODUCT_NAME) LIKE '%' || UPPER(#{searchValue}) || '%'
+	        </when> 
+	         <when test='searchType == "5"'>
+	               AND UPPER(B.STATUS) LIKE '%' || UPPER(#{searchValue}) || '%'
+	        </when>      
+	     </choose>          
+		</if>
+	) 
+WHERE RNUM <![CDATA[>=]]> #{startRow}
+  AND RNUM <![CDATA[<=]]> #{endRow}    
+</select>
+
+
+<select id="payListCount" parameterType="com.icia.web.model.Pay" resultType="int">
+SELECT COUNT(ORDER_NO) AS COUNT 
+  FROM(SELECT B.ORDER_NO AS ORDER_NO, 
+	          NVL(TO_CHAR(B.REG_DATE,'YYYY.MM.DD HH24:MI:SS'),'') AS REG_DATE,
+	          NVL(B.USER_ID, '') AS USER_ID, 
+	          NVL(B.PRODUCT_SEQ,0) AS PRODUCT_SEQ,
+	          NVL(P.PRODUCT_NAME, '') AS PRODUCT_NAME, 
+	          NVL(B.PAY_TOTAL_PRICE, 0) AS PAY_TOTAL_PRICE, 
+	          NVL(B.PAY_POINT_PRICE, 0) AS PAY_POINT_PRICE, 
+	          NVL(B.PAY_REAL_PRICE, 0) AS PAY_REAL_PRICE, 
+	          NVL(B.STATUS, 'N') AS STATUS
+	     FROM PRODUCT P,(SELECT A.ORDER_NO,         
+		            A.REG_DATE,
+		            A.USER_ID, 
+		            A.PRODUCT_SEQ, 
+		            A.PAY_REAL_PRICE, 
+		            A.PAY_POINT_PRICE, 
+		            A.PAY_TOTAL_PRICE,
+		            A.STATUS,
+		            A.CNT
+		        FROM ( 
+		            SELECT ROW_NUMBER() OVER(PARTITION BY P.ORDER_NO, P.PAY_REAL_PRICE ORDER BY P.ORDER_NO DESC) AS RNK, 
+		                P.ORDER_NO, 
+		                P.REG_DATE,
+		                O.PRODUCT_SEQ,
+		                P.USER_ID, 
+		                P.PAY_REAL_PRICE, 
+		                P.PAY_POINT_PRICE, 
+		                P.PAY_TOTAL_PRICE,
+		                P.STATUS,
+		                (SELECT COUNT(D.ORDER_NO) FROM ORDER_DETAIL  D WHERE O.ORDER_NO = D.ORDER_NO) AS CNT
+		            FROM PAY P, ORDER_DETAIL O
+		            WHERE O.ORDER_NO = P.ORDER_NO
+		                ) A 
+		        WHERE RNK = 1 )B
+         WHERE P.PRODUCT_SEQ = B.PRODUCT_SEQ
+  		<if test='searchType != null and searchType != "" and searchValue != null and searchValue != "" '>             
+    <choose>
+    	<when test='searchType == "1"'>           
+               AND A.ORDER_NO LIKE '%' || #{searchValue} || '%'
+        </when>
+        <when test='searchType == "2"'>       
+               AND A.REG_DATE LIKE '%' || #{searchValue} || '%'
+        </when>
+        <when test='searchType == "3"'>
+              AND A.USER_ID LIKE '%' || #{searchValue} || '%'
+        </when>
+        <when test='searchType == "4"'>
+               AND UPPER(P.PRODUCT_NAME) LIKE '%' || UPPER(#{searchValue}) || '%'
+        </when> 
+         <when test='searchType == "5"'>
+               AND UPPER(A.STATUS) LIKE '%' || UPPER(#{searchValue}) || '%'
+        </when>     
+    </choose>           
+</if>
+)
+</select>
+
+<select id="productList" parameterType="com.icia.web.model.Product" resultMap="ProductResultMap">
+SELECT PRODUCT_SEQ,
+       NVL(PRODUCT_NAME,'') AS PRODUCT_NAME,
+       NVL(PRODUCT_PRICE,'') AS PRODUCT_PRICE,
+       NVL(PRODUCT_QUANTITY,'') AS PRODUCT_QUANTITY,
+       NVL(STATUS,'N') AS STATUS,
+       NVL(PRODUCT_START_DATE,'') AS PRODUCT_START_DATE,
+       NVL(PRODUCT_END_DATE,'') AS PRODUCT_END_DATE,
+       NVL(PRODUCT_DETAIL,'') AS PRODUCT_DETAIL
+FROM (SELECT ROWNUM AS RNUM, 
+  			 PRODUCT_SEQ,
+             NVL(PRODUCT_NAME,'') AS PRODUCT_NAME,
+             NVL(PRODUCT_PRICE,'') AS PRODUCT_PRICE,
+             NVL(PRODUCT_QUANTITY,'') AS PRODUCT_QUANTITY,
+             NVL(STATUS,'N') AS STATUS,
+             NVL(PRODUCT_START_DATE,'') AS PRODUCT_START_DATE,
+             NVL(PRODUCT_END_DATE,'') AS PRODUCT_END_DATE,
+             NVL(PRODUCT_DETAIL,'') AS PRODUCT_DETAIL
+       FROM (SELECT  PRODUCT_SEQ,
+		             NVL(PRODUCT_NAME,'') AS PRODUCT_NAME,
+		             NVL(PRODUCT_PRICE,'') AS PRODUCT_PRICE,
+		             NVL(PRODUCT_QUANTITY,'') AS PRODUCT_QUANTITY,
+		             NVL(STATUS,'N') AS STATUS,
+		             NVL(PRODUCT_START_DATE,'') AS PRODUCT_START_DATE,
+		             NVL(PRODUCT_END_DATE,'') AS PRODUCT_END_DATE,
+		             NVL(PRODUCT_DETAIL,'') AS PRODUCT_DETAIL
+		        FROM PRODUCT
+		       WHERE 1=1
+	     <if test='searchType != null and searchType != "" and searchValue != null and searchValue != "" '>             
+			<choose>
+			   <when test='searchType == "1"'>           
+			     AND PRODUCT_NAME LIKE '%' || #{searchValue} || '%'
+			    </when>    
+			</choose>           
+		</if> 
+				   ORDER BY PRODUCT_SEQ DESC))
+WHERE RNUM <![CDATA[>=]]> #{startRow}
+  AND RNUM <![CDATA[<=]]> #{endRow}
+</select>
+
+<select id="productListCount" parameterType="com.icia.web.model.Product" resultType="long">
+SELECT COUNT( PRODUCT_SEQ) AS COUNT
+  FROM PRODUCT
+ WHERE 1=1
+<if test='searchType != null and searchType != "" and searchValue != null and searchValue != "" '>             
+ <choose>
+   <when test='searchType == "1"'>           
+   AND PRODUCT_NAME LIKE '%' || #{searchValue} || '%'
+   </when>    
+  </choose>           
+</if> 
+</select>
+
+<!-- 상품 상세페이지 조회 -->
+<select id="productDetail" parameterType="com.icia.web.model.Product" resultMap="ProductResultMap">
+SELECT PRODUCT_SEQ,
+       NVL(PRODUCT_NAME, '') AS PRODUCT_NAME,
+       NVL(PRODUCT_PRICE, 0) AS PRODUCT_PRICE,
+       NVL(PRODUCT_QUANTITY, 0) AS PRODUCT_QUANTITY,
+       NVL(STATUS, 'N') AS STATUS,
+       NVL(PRODUCT_START_DATE, '') AS PRODUCT_START_DATE,
+       NVL(PRODUCT_END_DATE, '') AS PRODUCT_END_DATE,
+       NVL(PRODUCT_DETAIL, '') AS PRODUCT_DETAIL
+  FROM PRODUCT
+ WHERE PRODUCT_SEQ = #{value}
+</select>
+
+<!-- 상품 상세내역 조회 -->
+<select id="orderDSelect" parameterType="com.icia.web.model.OrderDetail" resultMap = "OrderDetailResultMap">
+SELECT USER_ID,
+	   ORDER_NO,
+	   PRODUCT_SEQ,
+	   PRODUCT_NAME,
+	   ORDER_DETAIL_QUANTITY,
+	   ORDER_DETAIL_PRICE,
+       REG_DATE
+FROM(SELECT ROWNUM AS RNUM,
+			A.USER_ID,
+			A.ORDER_NO,
+			A.PRODUCT_SEQ,
+			A.PRODUCT_NAME,
+			A.ORDER_DETAIL_QUANTITY,
+			A.ORDER_DETAIL_PRICE,
+            P.REG_DATE
+	 FROM PAY P , (SELECT NVL(OD.USER_ID, '') AS USER_ID,
+                         NVL(OD.ORDER_NO, 0) AS ORDER_NO,
+                         NVL(OD.PRODUCT_SEQ, 0) AS PRODUCT_SEQ,
+                         NVL(P.PRODUCT_NAME, '') AS PRODUCT_NAME,
+                         NVL(OD.ORDER_DETAIL_QUANTITY, 0) AS ORDER_DETAIL_QUANTITY,
+                         NVL(OD.ORDER_DETAIL_PRICE, 0) AS ORDER_DETAIL_PRICE
+                  FROM ORDER_DETAIL OD, PRODUCT P
+                  WHERE OD.ORDER_NO IN (SELECT ORDER_NO
+                                          FROM A_ORDER
+                                         WHERE ORDER_NO = #{orderNo}
+                                        )
+                    AND OD.PRODUCT_SEQ = P.PRODUCT_SEQ
+                  ORDER BY OD.ORDER_NO DESC
+                 )A
+                 WHERE A.ORDER_NO = P.ORDER_NO)
+WHERE RNUM <![CDATA[>=]]> #{startRow}
+	AND RNUM <![CDATA[<=]]> #{endRow}
+</select>
+
+<!-- 상품 상세 총 개수 -->
+<select id="orderDCount" parameterType="long" resultType="long">
+SELECT COUNT(A.USER_ID) AS CNT
+  FROM PAY P , (SELECT NVL(OD.USER_ID, '') AS USER_ID,
+                         NVL(OD.ORDER_NO, 0) AS ORDER_NO,
+                         NVL(OD.PRODUCT_SEQ, 0) AS PRODUCT_SEQ,
+                         NVL(P.PRODUCT_NAME, '') AS PRODUCT_NAME,
+                         NVL(OD.ORDER_DETAIL_QUANTITY, 0) AS ORDER_DETAIL_QUANTITY,
+                         NVL(OD.ORDER_DETAIL_PRICE, 0) AS ORDER_DETAIL_PRICE
+                  FROM ORDER_DETAIL OD, PRODUCT P
+                  WHERE OD.ORDER_NO IN (SELECT ORDER_NO
+                                          FROM A_ORDER
+                                         WHERE ORDER_NO = #{value}
+                                        )
+                    AND OD.PRODUCT_SEQ = P.PRODUCT_SEQ
+                  ORDER BY OD.ORDER_NO DESC
+                 )A
+                 WHERE A.ORDER_NO = P.ORDER_NO
+</select>
+
+
+<!-- 시퀀스 증가 -->
+<select id="productSeqSelect" resultType="long">
+	SELECT SEQ_PRODUCT_SEQ.NEXTVAL FROM DUAL
+</select>
+
+<!-- 상품 업로드 -->
+<insert id="productInsert" parameterType="com.icia.web.model.VoteUpload">
+INSERT INTO PRODUCT (PRODUCT_SEQ,
+					 PRODUCT_NAME,
+					 PRODUCT_PRICE,
+					 PRODUCT_QUANTITY,
+					 STATUS,
+					  PRODUCT_START_DATE,
+					 PRODUCT_END_DATE,
+					 PRODUCT_DETAIL) 
+VALUES (#{productSeq}, 
+		#{productName}, 
+		#{productPrice}, 
+		#{productQuantity}, 
+		#{status}, 
+		#{productStartDate}, 
+		#{productEndDate},
+		#{productDetail})
+</insert>
+
+<update id="productUpdate" parameterType ="com.icia.web.model.Product">
+UPDATE PRODUCT
+   SET PRODUCT_NAME = #{productName}, 
+       PRODUCT_PRICE = #{productPrice},
+       PRODUCT_QUANTITY = #{productQuantity},
+       STATUS = #{status}, 
+       PRODUCT_START_DATE = #{productStartDate},
+       PRODUCT_END_DATE = #{productEndDate},
+       PRODUCT_DETAIL = #{productDetail}
+ WHERE PRODUCT_SEQ = #{productSeq}
+</update>
+
+<delete id="productDelete" parameterType="long">
+DELETE FROM PRODUCT
+ WHERE PRODUCT_SEQ = #{productSeq}
+</delete>
+
+<select id="userListSelect" parameterType="com.icia.web.model.User" resultMap="userListResultMap">
+SELECT RNUM,
+       USER_ID,
+       USER_NICK,
+       USER_CODE,
+       STATUS,
+       USER_FEE,
+       USER_CHARGE 
+FROM(SELECT ROWNUM AS RNUM,
+            USER_ID,
+            USER_NICK,
+            USER_CODE,
+            STATUS,
+            USER_FEE,
+            USER_CHARGE 
+     FROM(SELECT USER_ID,
+                 USER_NICK,
+                 NVL(USER_CODE, '' ) AS USER_CODE,
+                 NVL(STATUS, '') AS STATUS,
+                 NVL(USER_FEE, '') AS USER_FEE,
+                 NVL(USER_CHARGE, '') AS USER_CHARGE              
+            FROM A_USER
+           WHERE 1 = 1
+           <if test='userId != null and userId != ""'>
+             AND USER_ID = #{userId}
+           </if>
+           <if test='userCode != null and userCode != ""'>
+             AND USER_CODE = #{userCode}
+           </if>
+           <if test='status != null and status != ""'>
+             AND STATUS = #{status}
+           </if>
+			))
+WHERE RNUM <![CDATA[>=]]> #{startRow} AND RNUM <![CDATA[<=]]> #{endRow}
+</select>
+
+<select id="userListTotalCount" parameterType="com.icia.web.model.User" resultType="long">
+SELECT COUNT(USER_ID) AS TOTALCOUNT
+FROM A_USER
+ WHERE 1 = 1
+ <if test='userId != null and userId != ""'>
+   AND USER_ID = #{userId}
+ </if>
+ <if test='userCode != null and userCode != ""'>
+   AND USER_CODE = #{userCode}
+ </if>
+ <if test='status != null and status != ""'>
+   AND STATUS = #{status}
+ </if>
+</select>
+
+<update id="userCodeUpdate" parameterType="string">
+UPDATE A_USER
+   SET USER_CODE = 'A'
+ WHERE USER_ID = #{value}
+</update>
+
+<update id="userFeeUpdate" parameterType="string">
+UPDATE A_USER
+   SET USER_FEE = 'Y'
+ WHERE USER_ID = #{value}
+</update>
+
+<update id="userChargePlus" parameterType="com.icia.web.model.User">
+UPDATE A_USER
+   SET USER_CHARGE = USER_CHARGE + #{userCharge}
+ WHERE USER_ID = #{userId}
+</update>
+
+<update id="userUpdateAdmin" parameterType ="com.icia.web.model.User">
+UPDATE A_USER
+   SET USER_PWD = #{userPwd},
+       USER_NAME = #{userName},
+       USER_PHONE = #{userPhone},
+       USER_ADDR = #{userAddr},
+       USER_EMAIL = #{userEmail},
+       USER_POSTCODE = #{userPostcode},
+       STATUS = #{status}
+ WHERE USER_ID = #{userId}
+</update>
+
+
+<!-- 투표, 이벤트 겸매 -->
+<!-- 투표신청작 조회 -->	
+<select id="admVoteUploadList" parameterType="com.icia.web.model.VoteUpload" resultMap="admVlResultMap">
+	
+SELECT
+    VR_SEQ,
+    USER_ID,
+    USER_NAME,
+    CATEGORY_NO,
+    CATEGORY_NAME,
+    VR_TITLE,
+    VR_CONTENT,
+    VR_TOTAL_CNT,
+    VR_START_PRICE,
+    STATUS,
+    REG_DATE,
+    VR_START_DATE,
+    VR_END_DATE
+	FROM
+	(   SELECT  
+	        ROWNUM AS RNUM,
+	        VR_SEQ,
+	        USER_ID,
+	        USER_NAME,
+	        CATEGORY_NO,
+	        CATEGORY_NAME,
+	        VR_TITLE,
+	        VR_CONTENT,
+            VR_TOTAL_CNT,
+	        VR_START_PRICE,
+	        STATUS,
+	        REG_DATE,
+	        VR_START_DATE,
+	        VR_END_DATE 
+	     FROM( 
+	            SELECT
+	                VR_SEQ,
+	                NVL(V.USER_ID,'') AS USER_ID,
+	                NVL(U.USER_NAME,'') AS USER_NAME,
+	                NVL(V.CATEGORY_NO,00) AS CATEGORY_NO,
+	                NVL(C.CATEGORY_NAME,'') AS CATEGORY_NAME,
+	                NVL(VR_TITLE,'') AS VR_TITLE,
+	                NVL(VR_CONTENT,'') AS VR_CONTENT,
+                    NVL(VR_TOTAL_CNT,0) AS VR_TOTAL_CNT,
+	                NVL(VR_START_PRICE,0) AS VR_START_PRICE,
+	                NVL(V.STATUS,'P') AS STATUS,
+	                NVL(TO_CHAR(REG_DATE,'YYYY-MM-DD HH24:MI:SS'),'') AS REG_DATE,
+	                NVL(VR_START_DATE,'') AS VR_START_DATE,
+	                NVL(VR_END_DATE,'') AS VR_END_DATE
+	            FROM
+	                VOTE_UPLOAD V, A_USER U, CATEGORY C
+	            WHERE
+	                V.USER_ID = U.USER_ID
+	            AND
+	                V.CATEGORY_NO = C.CATEGORY_NO
+	            <if test='searchType != null and searchType != "" and searchValue != null and searchValue != "" '>             
+		    <choose>
+		    	<when test='searchType == "1"'>           
+		              AND UPPER(VR_TITLE) LIKE '%' || UPPER(#{searchValue}) || '%'
+		        </when>
+		        <when test='searchType == "2"'>       
+		              AND UPPER(V.USER_ID) LIKE '%' || UPPER(#{searchValue}) || '%'
+		        </when>      
+		     </choose>          
+			</if>  
+	            ORDER BY
+	                  VR_SEQ DESC))
+	            WHERE 
+	            	RNUM <![CDATA[>=]]> #{startRow}
+	            AND
+	            	RNUM <![CDATA[<=]]> #{endRow}
+	          
+	          
+	</select>
+
+<!-- 투표신청작 조회 (건수 조회)-->
+	
+<select id="admVoteUploadListCount" parameterType="com.icia.web.model.VoteUpload" resultType="long">
+SELECT
+    COUNT(VR_SEQ)
+FROM
+    VOTE_UPLOAD V, A_USER U, CATEGORY C
+WHERE
+    V.USER_ID = U.USER_ID
+AND
+    V.CATEGORY_NO = C.CATEGORY_NO
+ <if test='searchType != null and searchType != "" and searchValue != null and searchValue != "" '>             
+		    <choose>
+		    	<when test='searchType == "1"'>           
+		              AND UPPER(VR_TITLE) LIKE '%' || UPPER(#{searchValue}) || '%'
+		        </when>
+		        <when test='searchType == "2"'>       
+		              AND UPPER(V.USER_ID) LIKE '%' || UPPER(#{searchValue}) || '%'
+		        </when>      
+		     </choose>          
+			</if>      
+
+</select>
+
+<!-- 투표 승인 상태 변경 -->
+
+<update id="vuStatusUpdate" parameterType="long">
+UPDATE VOTE_UPLOAD
+   SET STATUS = 'R'
+ WHERE VR_SEQ = #{value}
+   AND STATUS = 'P'
+
+</update> 
+
+
+<!-- 이벤트 경매 입찰 내역 조회 -->
+
+<select id="admAucEventCurList" parameterType="com.icia.web.model.AucEventCur" resultMap="admAeCurResultMap">
+SELECT
+    AE_CUR_SEQ,
+    AE_SEQ,
+    AE_TITLE,
+    AE_PRODUCT_TITLE,
+    USER_ID,
+    AE_CUR_PRICE,
+    AE_CUR_BUY_TIME,
+    STATUS
+FROM(
+        SELECT
+            ROWNUM AS RNUM,
+            AE_CUR_SEQ,
+            AE_SEQ,
+            AE_TITLE,
+            AE_PRODUCT_TITLE,
+            USER_ID,
+            AE_CUR_PRICE,
+            AE_CUR_BUY_TIME,
+            STATUS
+        FROM
+            (
+                SELECT
+                    AE_CUR_SEQ,
+                    NVL(E.AE_SEQ,0) AS AE_SEQ,
+                    NVL(E.AE_TITLE,'') AS AE_TITLE,
+                    NVL(E.AE_PRODUCT_TITLE,'') AS AE_PRODUCT_TITLE,
+                    NVL(C.USER_ID,'') AS USER_ID,
+                    NVL(AE_CUR_PRICE,'') AS AE_CUR_PRICE,
+                    NVL(TO_CHAR(AE_CUR_BUY_TIME,'YYYY-MM-DD HH24:MI:SS'),'') AS AE_CUR_BUY_TIME,
+                    NVL(C.STATUS,'N') AS STATUS
+                FROM
+                    AUC_EVENT_CUR C, AUC_EVENT E
+                WHERE
+                    E.AE_SEQ = C.AE_SEQ 
+     		 <if test='searchType != null and searchType != "" and searchValue != null and searchValue != "" '>             
+		    <choose>
+		    	<when test='searchType == "1"'>           
+		              AND UPPER(AE_TITLE) LIKE '%' || UPPER(#{searchValue}) || '%'
+		        </when>
+		        <when test='searchType == "2"'>       
+		              AND UPPER(C.USER_ID) LIKE '%' || UPPER(#{searchValue}) || '%'
+		        </when>
+		     
+		     </choose>          
+			</if>      
+			 <if test='searchType != null and searchType != ""'>
+			 <choose>
+			   <when test='searchType == "3"'>       
+		              AND C.STATUS != 'Y'
+		        </when>      
+		         <when test='searchType == "4"'>       
+		              AND C.STATUS = 'Y'
+		        </when>       
+              </choose>
+               </if> 	
+                ORDER BY
+                    AE_CUR_BUY_TIME DESC
+                	))
+                WHERE
+                    RNUM <![CDATA[>=]]> #{startRow}
+                  AND
+                    RNUM <![CDATA[<=]]> #{endRow}
+                ORDER BY
+                    AE_SEQ DESC
+
+
+</select>
+
+<!-- 이벤트 경매 입찰 내역 조회 (건수)-->
+
+<select id="admAucEventListCurCount" parameterType="com.icia.web.model.AucEventCur" resultType="long">
+  SELECT
+        COUNT(AE_CUR_SEQ)
+    FROM
+        AUC_EVENT_CUR C, AUC_EVENT E
+   WHERE
+        E.AE_SEQ = C.AE_SEQ
+     <if test='searchType != null and searchType != "" and searchValue != null and searchValue != "" '>             
+    <choose>
+    	<when test='searchType == "1"'>           
+              AND UPPER(AE_TITLE) LIKE '%' || UPPER(#{searchValue}) || '%'
+        </when>
+        <when test='searchType == "2"'>       
+              AND UPPER(C.USER_ID) LIKE '%' || UPPER(#{searchValue}) || '%'
+        </when>      
+     </choose>          
+</if>      
+</select>
+
+<!-- 이벤트 경매글 조회 -->
+
+<select id="admAucEventList" parameterType="com.icia.web.model.AucEvent" resultMap="admAeResultMap">
+
+SELECT
+    AE_SEQ,
+    AE_TITLE,
+    AE_PRODUCT_TITLE,
+    AE_START_PRICE,
+    AE_BUY_PRICE,
+    AE_START_TIME,
+    AE_END_TIME,
+    STATUS
+FROM
+    (
+     SELECT
+        ROWNUM AS RNUM,
+        AE_SEQ,
+        AE_TITLE,
+        AE_PRODUCT_TITLE,
+        AE_START_PRICE,
+        AE_BUY_PRICE,
+        AE_START_TIME,
+        AE_END_TIME,
+        STATUS
+     FROM
+    (
+        SELECT
+            AE_SEQ,
+            NVL(AE_TITLE,'') AS AE_TITLE,
+            NVL(AE_PRODUCT_TITLE,'') AS AE_PRODUCT_TITLE,
+            NVL(AE_START_PRICE,0) AS AE_START_PRICE,
+            NVL(AE_BUY_PRICE,0) AS AE_BUY_PRICE,
+            NVL(AE_START_TIME,'02') AS AE_START_TIME,
+            NVL(AE_END_TIME,'23') AS AE_END_TIME,
+            NVL(STATUS,'R') AS STATUS
+        FROM
+            AUC_EVENT
+          <if test='searchType != null and searchType != "" and searchValue != null and searchValue != "" '>             
+				    <choose>
+				    	<when test='searchType == "1"'>           
+				               WHERE UPPER(AE_TITLE) LIKE '%' || UPPER(#{searchValue}) || '%'
+				        </when>
+				        <when test='searchType == "2"'>       
+				               WHERE UPPER(AE_PRODUCT_TITLE) LIKE '%' || UPPER(#{searchValue}) || '%'
+				        </when>      
+				     </choose>          
+				</if>            
+        ORDER BY
+            AE_SEQ DESC))
+        WHERE 
+            RNUM <![CDATA[>=]]> #{startRow}
+          AND
+            RNUM <![CDATA[<=]]> #{endRow}
+
+
+</select>
+
+
+<!-- 이벤트 경매글 조회 ( 건수 )  -->
+
+<select id="admAucEventListCount" parameterType="com.icia.web.model.AucEvent" resultType="long">
+
+ SELECT
+        COUNT(AE_SEQ)
+   FROM
+        AUC_EVENT
+  <if test='searchType != null and searchType != "" and searchValue != null and searchValue != "" '>             
+    <choose>
+    	<when test='searchType == "1"'>           
+              WHERE UPPER(AE_TITLE) LIKE '%' || UPPER(#{searchValue}) || '%'
+        </when>
+        <when test='searchType == "2"'>       
+             WHERE UPPER(AE_PRODUCT_TITLE) LIKE '%' || UPPER(#{searchValue}) || '%'
+        </when>      
+     </choose>          
+</if>
+	 ORDER BY
+            AE_SEQ DESC
+</select>
+
+<!-- 낙찰 실패된사람 조회 -->
+
+<select id="admAeReturnSelect" parameterType="long" resultMap="admAeCurResultMap">
+SELECT 
+    C.AE_CUR_PRICE,
+    C.USER_ID 
+    FROM AUC_EVENT_CUR C, AUC_EVENT E
+    WHERE C.AE_SEQ = E.AE_SEQ
+      AND E.AE_SEQ = #{value}
+      AND E.STATUS = 'N'
+      AND C.STATUS = 'N'
+</select>
+
+
+<!-- 돈 돌려주기 -->
+
+<update id="admAeReturnUpdate" parameterType="com.icia.web.model.AucEventCur">
+UPDATE 
+    A_USER
+SET
+    USER_CHARGE = USER_CHARGE + #{aeCurPrice}
+WHERE USER_ID = #{userId}   
+
+</update>
+
+
+<!-- 환불완료로 변경 -->
+
+<update id="admAeStatusUpdate" parameterType="long">
+UPDATE 
+    AUC_EVENT_CUR 
+SET
+    STATUS = 'C'
+WHERE
+    STATUS = 'N'
+AND
+    AE_SEQ = (SELECT AE_SEQ
+                FROM AUC_EVENT
+               WHERE AE_SEQ = #{value}
+                 AND STATUS ='N')
+
+</update>
+
+<!-- 경매예정작 시작으로 변경 -->
+
+<update id="admAeStatusUpdateY" parameterType="long">
+UPDATE
+	AUC_EVENT
+SET
+	STATUS = 'Y'
+WHERE 
+	AE_SEQ = #{value}
+AND
+	STATUS = 'R'
+
+</update>
+
+<!-- 진행중인 경매 종료 변경 -->
+
+<update id="admAeStatusUpdateN" parameterType="long">
+
+UPDATE
+	AUC_EVENT
+SET
+	STATUS = 'N'
+WHERE 
+	AE_SEQ =#{value}
+AND
+	STATUS = 'Y'
+
+</update>
+
+
+
+
+
+<!-- 시퀀스 번호 조회  -->
+
+<select id="aeSeqSelect" resultType="long">
+	SELECT SEQ_AE_SEQ.NEXTVAL FROM DUAL
+</select>
+
+<!-- 이벤트 경매 업로드 -->
+
+<insert id="admAeInsert" parameterType="com.icia.web.model.AucEvent">
+
+ INSERT INTO AUC_EVENT (
+    AE_SEQ,
+    ADM_ID,
+    AE_START_TIME,
+    AE_END_TIME,
+    AE_BUY_PRICE,
+    AE_TITLE,
+    STATUS,
+    AE_START_PRICE,
+    AE_PRODUCT_TITLE
+) VALUES (
+    #{aeSeq},
+    #{admId},
+    #{aeStartTime},
+    #{aeEndTime},
+    0,
+    #{aeTitle},
+    'R',
+    #{aeStartPrice},
+    #{aeProductTitle}
+    
+)
+
+
+
+</insert>
+
+<!-- 투표한 사람들 조회 -->
+<select id="admVoteList" parameterType="com.icia.web.model.VoteList" resultMap="admVoteListResultMap">
+SELECT VR_SEQ,
+	   VL_USER_ID,
+	   VOTE_DATE
+FROM(SELECT
+     ROWNUM AS RNUM,
+     VR_SEQ,
+     VL_USER_ID,
+     VOTE_DATE
+     FROM
+    (SELECT VR_SEQ,
+	        NVL(VL_USER_ID,'') AS VL_USER_ID,
+	        NVL(TO_CHAR(VOTE_DATE, 'YYYY-MM-DD HH24:MI:SS'),'') AS VOTE_DATE
+	        FROM
+	        VOTE_LIST
+	        WHERE
+	        VR_SEQ = #{vrSeq}
+   <if test='vlSearchType != null and vlSearchType != "" and vlSearchValue != null and vlSearchValue != "" '>
+      <choose>
+         <when test='vlSearchType == "1"'>
+            AND UPPER(VL_USER_ID) LIKE '%' || UPPER(#{vlSearchValue}) || '%'
+         </when>
+         <when test='vlSearchType == "2"'>
+            AND TO_CHAR(VOTE_DATE,'YYYY-MM-DD HH24:MI:SS') LIKE '%' ||
+            #{vlSearchValue} || '%'
+         </when>
+      </choose>
+   </if>
+            ORDER BY VOTE_DATE DESC ))
+WHERE RNUM <![CDATA[>=]]> #{startRow}
+  AND RNUM <![CDATA[<=]]> #{endRow}   
+</select>
+
+<!-- 건수 조회 -->
+<select id="admVoteListCount" parameterType="com.icia.web.model.VoteList" resultType="long">
+SELECT COUNT(VL_USER_ID)
+FROM VOTE_LIST
+WHERE VR_SEQ = #{vrSeq}
+<if test='vlSearchType != null and vlSearchType != "" and vlSearchValue != null and vlSearchValue != "" '>
+      <choose>
+         <when test='vlSearchType == "1"'>
+            AND UPPER(VL_USER_ID) LIKE '%' || UPPER(#{vlSearchValue}) || '%'
+         </when>
+         <when test='vlSearchType == "2"'>
+            AND TO_CHAR(VOTE_DATE,'YYYY-MM-DD HH24:MI:SS') LIKE '%' ||
+            #{vlSearchValue} || '%'
+         </when>
+      </choose>
+</if>
+</select>
+
+
+<!-- 가장 높은 금액 낙찰시키기 -->
+
+<update id="admBidUpdateY" parameterType="long">
+
+UPDATE AUC_EVENT_CUR C
+SET STATUS = 'Y'
+WHERE STATUS = 'N'
+  AND AE_CUR_PRICE = (SELECT MAX(AE_CUR_PRICE)
+                     FROM AUC_EVENT_CUR
+                     WHERE AE_SEQ = #{value})
+  AND AE_SEQ = #{value}
+  AND AE_CUR_BUY_TIME = (SELECT MIN(AE_CUR_BUY_TIME)
+                    FROM AUC_EVENT_CUR
+                    WHERE STATUS = 'N'
+                      AND AE_SEQ = #{value}
+                      AND AE_CUR_PRICE = (SELECT MAX(AE_CUR_PRICE)
+                                         FROM AUC_EVENT_CUR
+                                         WHERE AE_SEQ = #{value}))
+ AND EXISTS (
+    SELECT 1
+    FROM AUC_EVENT A
+    WHERE A.AE_SEQ = C.AE_SEQ
+    AND A.STATUS = 'N'
+  )
+
+
+</update>
+
+
+
+</mapper>

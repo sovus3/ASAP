@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icia.web.dao.ProductDao">
+	<!-- 상품 -->
+	<resultMap type="com.icia.web.model.Product" id="ProductResultMap">
+		<id column="PRODUCT_SEQ" property="productSeq" />
+		<result column="PRODUCT_NAME" property="productName" />
+		<result column="PRODUCT_PRICE" property="productPrice" />
+		<result column="PRODUCT_QUANTITY" property="productQuantity" />
+		<result column="STATUS" property="status" />
+		<result column="PRODUCT_START_DATE" property="productStartDate" />
+		<result column="PRODUCT_END_DATE" property="productEndDate" />
+		<result column="PRODUCT_DETAIL" property="productDetail" />
+	</resultMap>
+
+	<!-- 장바구니 -->
+	<resultMap type="com.icia.web.model.Cart" id="CartResultMap">
+		<id column="USER_ID" property="userId" />
+		<result column="PRODUCT_SEQ" property="productSeq" />
+		<result column="PRODUCT_NAME" property="productName" />
+		<result column="CART_QUANTITY" property="cartQuantity" />
+		<result column="CART_PRICE" property="cartPrice" />
+		<result column="PRODUCT_QUANTITY" property="productQuantity" />
+		<result column="PRODUCT_PRICE" property="productPrice" />
+	</resultMap>
+
+	<!-- 리뷰 -->
+	<resultMap type="com.icia.web.model.Review" id="ReviewResultMap">
+		<id column="REVIEW_SEQ" property="reviewSeq" />
+		<result column="USER_ID" property="userId" />
+		<result column="ORDER_NO" property="orderNo" />
+		<result column="REG_DATE" property="regDate" />
+		<result column="PRODUCT_SEQ" property="productSeq" />
+		<result column="PRODUCT_NAME" property="productName" />
+		<result column="REVIEW_CONTENT" property="reviewContent" />
+	</resultMap>
+	
+	<!-- 주문 상세 내역 -->
+	<resultMap type="com.icia.web.model.OrderDetail" id="OrderDetailResultMap">
+		<id column="USER_ID" property="userId" />
+		<result column="ORDER_NO" property="orderNo" />
+		<result column="PRODUCT_SEQ" property="productSeq" />
+		<result column="ORDER_DETAIL_QUANTITY" property="orderDetailQuantity" />
+		<result column="ORDER_DETAIL_PRICE" property="orderDetailPrice" />
+	</resultMap>
+	
+	<!-- 주문 상세 내역 -->
+	<resultMap type="com.icia.web.model.Order" id="OrderResultMap">
+		<id column="ORDER_NO" property="orderNo" />
+		<result column="USER_ID" property="userId" />
+		<result column="ORDER_DATE" property="orderDate" />
+		<result column="STATUS" property="status" />
+		<result column="ORDER_TOTAL_PRICE" property="orderTotalPrice" />
+		<result column="ORDER_TOTAL_QUANTITY" property="orderTotalQuantity" />
+	</resultMap>
+
+	<!-- 상품 리스트 -->
+	<select id="productList" parameterType="com.icia.web.model.Product" resultMap="ProductResultMap">
+		SELECT PRODUCT_SEQ,
+			   NVL(PRODUCT_NAME,'') AS PRODUCT_NAME,
+			   NVL(PRODUCT_PRICE,'') AS PRODUCT_PRICE,
+			   NVL(PRODUCT_QUANTITY,'') AS PRODUCT_QUANTITY,
+			   NVL(STATUS,'N') AS STATUS,
+			   NVL(PRODUCT_START_DATE,'') AS PRODUCT_START_DATE,
+			   NVL(PRODUCT_END_DATE,'') AS PRODUCT_END_DATE,
+			   NVL(PRODUCT_DETAIL,'') AS PRODUCT_DETAIL
+		FROM PRODUCT
+		WHERE STATUS = #{status}
+		ORDER BY PRODUCT_SEQ DESC
+	</select>
+
+	<!-- 상품 리스트 총 개수 -->
+	<select id="productListCount" parameterType="com.icia.web.model.Product" resultType="long">
+		SELECT COUNT(PRODUCT_SEQ) AS COUNT
+		FROM PRODUCT
+		WHERE STATUS = #{status}
+	</select>
+
+	<!-- 상품 상세페이지 조회 -->
+	<select id="productDetail" parameterType="com.icia.web.model.Product" resultMap="ProductResultMap">
+		SELECT PRODUCT_SEQ,
+			   NVL(PRODUCT_NAME, '') AS PRODUCT_NAME,
+			   NVL(PRODUCT_PRICE, 0) AS PRODUCT_PRICE,
+			   NVL(PRODUCT_QUANTITY, 0) AS PRODUCT_QUANTITY,
+			   NVL(STATUS, 'N') AS STATUS,
+			   NVL(PRODUCT_START_DATE, '') AS PRODUCT_START_DATE,
+			   NVL(PRODUCT_END_DATE, '') AS PRODUCT_END_DATE,
+			   NVL(PRODUCT_DETAIL, '') AS PRODUCT_DETAIL
+		FROM PRODUCT
+		WHERE PRODUCT_SEQ = #{value}
+	</select>
+
+	<!-- 장바구니 추가 -->
+	<insert id="cartInsert" parameterType="com.icia.web.model.Cart">
+		<selectKey resultType="long" keyProperty="cartNo" order="BEFORE">		<!-- keyProperty hibbsSeq랑 values의 hiBbsSeq 이름이 일치해야함. -->
+			SELECT SEQ_CART_NO.NEXTVAL FROM DUAL
+		</selectKey>
+
+		INSERT INTO CART
+		(
+		CART_NO,
+		USER_ID,
+		PRODUCT_SEQ,
+		PRODUCT_NAME,
+		CART_QUANTITY,
+		CART_PRICE
+		)
+		VALUES
+		(
+		#{cartNo},
+		#{userId},
+		#{productSeq},
+		#{productName},
+		#{cartQuantity},
+		#{cartPrice}
+		)
+	</insert>
+
+	<select id="cartDuplicate" resultMap="CartResultMap">
+		SELECT CART_NO,
+		       USER_ID,
+		       PRODUCT_SEQ,
+		       PRODUCT_NAME,
+		       CART_QUANTITY,
+		       CART_PRICE,
+		       '' AS PRODUCT_QUANTITY
+		  FROM CART	
+		 WHERE USER_ID = #{userId}
+		   AND PRODUCT_SEQ = #{productSeq}
+	</select>
+
+	<!-- 장바구니 수량 업데이트 -->
+	<update id="cartQuantityUpdate" parameterType="com.icia.web.model.Cart">
+		UPDATE CART
+		SET CART_QUANTITY = CART_QUANTITY +1,
+		    CART_PRICE = CART_PRICE +${cartPrice}
+		WHERE USER_ID = #{userId}
+			AND PRODUCT_SEQ = #{productSeq}
+	</update>
+
+	<select id="cartList" parameterType="String" resultMap="CartResultMap">
+		SELECT CART_NO,
+	           USER_ID,
+	           PRODUCT_SEQ,
+	           PRODUCT_NAME,
+	           CART_QUANTITY,
+	           CART_PRICE,
+	           (SELECT P.PRODUCT_QUANTITY FROM PRODUCT P WHERE C.PRODUCT_SEQ = P.PRODUCT_SEQ) AS PRODUCT_QUANTITY,
+	           (SELECT P.PRODUCT_PRICE FROM PRODUCT P WHERE C.PRODUCT_SEQ = P.PRODUCT_SEQ) AS PRODUCT_PRICE
+		  FROM CART C
+		 WHERE USER_ID= #{userId}
+		 ORDER BY CART_NO DESC
+		 
+	</select>
+
+	<select id="cartListCount" parameterType="com.icia.web.model.Cart" resultType="long">
+		SELECT COUNT(CART_NO) AS CNT
+		FROM cart
+		WHERE USER_ID=#{userId}
+	</select>
+
+	<update id="cartUpdate" parameterType="com.icia.web.model.Cart">
+		UPDATE CART
+		SET CART_QUANTITY=${cartQuantity},
+		    CART_PRICE = ${cartPrice}
+		WHERE USER_ID = #{userId}
+			AND PRODUCT_SEQ = #{productSeq}
+	</update>
+
+	<delete id="cartDelete" parameterType="com.icia.web.model.Cart">
+		DELETE FROM CART
+		WHERE USER_ID = #{userId}
+			AND PRODUCT_SEQ = #{productSeq}
+	</delete>
+
+	<!-- 상품 재고 -->
+	<select id="maxProductQuan" parameterType="long" resultType="int">
+		SELECT PRODUCT_QUANTITY
+		FROM PRODUCT
+		WHERE PRODUCT_SEQ = #{productSeq}
+	</select>
+	
+	<!-- 상품 상세내역 조회, 추후 위치 변경 예정 -->
+	<select id="orderDetailSelect" parameterType="long" resultMap = "OrderDetailResultMap">
+	SELECT NVL(USER_ID, '') AS USER_ID,
+		   NVL(ORDER_NO, 0) AS ORDER_NO,
+		   NVL(PRODUCT_SEQ, 0) AS PRODUCT_SEQ,
+		   NVL(ORDER_DETAIL_QUANTITY, 0) AS ORDER_DETAIL_QUANTITY,
+		   NVL(ORDER_DETAIL_PRICE, 0) AS ORDER_DETAIL_PRICE
+	FROM ORDER_DETAIL
+	WHERE ORDER_NO = (
+					  SELECT ORDER_NO
+					  FROM A_ORDER
+					  WHERE STATUS = 'Y'
+						AND ORDER_NO = #{value}
+					 )
+	</select>
+
+	<!-- 리뷰 등록 -->
+	<insert id="reviewInsert" parameterType="com.icia.web.model.Review">
+
+		<!-- 선행처리기(insert 전에 시퀀스 번호 생성) -->
+		<!-- long : SEQ_HIBOARD_SEQ.NEXTVAL의 타입 hiBbsSeq : hiboard.java에 있는 인스턴스 
+			변수명 -->
+		<selectKey resultType="long" keyProperty="reviewSeq" order="BEFORE">
+			SELECT SEQ_REVIEW_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+
+		INSERT INTO REVIEW
+		(
+		REVIEW_SEQ,
+		USER_ID,
+		ORDER_NO,
+		REG_DATE,
+		PRODUCT_SEQ,
+		REVIEW_CONTENT
+		)
+		VALUES
+		(
+		#{reviewSeq},
+		#{userId},
+		#{orderNo},
+		SYSDATE,
+		#{productSeq},
+		#{reviewContent}
+		)
+	</insert>
+
+	<!-- 리뷰 리스트 -->
+	<select id="reviewList" parameterType="com.icia.web.model.Review" resultMap="ReviewResultMap">
+		SELECT REVIEW_SEQ,
+			   USER_ID,
+			   ORDER_NO,
+			   REG_DATE,
+			   PRODUCT_SEQ,
+			   REVIEW_CONTENT
+		FROM(
+			 SELECT ROWNUM RUM,
+					REVIEW_SEQ,
+					USER_ID,
+					ORDER_NO,
+					REG_DATE,
+					PRODUCT_SEQ,
+					REVIEW_CONTENT
+			 FROM(
+				  SELECT REVIEW_SEQ,
+						 NVL(R.USER_ID, '') AS USER_ID,
+						 NVL(AO.ORDER_NO, 0) AS ORDER_NO,
+						 NVL(TO_CHAR(R.REG_DATE,'YYYY/MM/DD'),'') AS REG_DATE,
+						 NVL(P.PRODUCT_SEQ, 0) AS PRODUCT_SEQ,
+						 NVL(R.REVIEW_CONTENT, '') AS REVIEW_CONTENT
+				  FROM REVIEW R,(
+								 SELECT PRODUCT_SEQ, STATUS
+								 FROM PRODUCT
+								 WHERE STATUS = 'Y'
+								) P,
+								(
+								 SELECT ORDER_NO, STATUS
+								 FROM A_ORDER
+								 WHERE STATUS = 'Y'
+								) AO
+				  WHERE R.ORDER_NO = AO.ORDER_NO
+					AND R.PRODUCT_SEQ = P.PRODUCT_SEQ
+					AND P.PRODUCT_SEQ = #{productSeq}
+				  ORDER BY R.REVIEW_SEQ DESC
+				 )
+			 )
+		WHERE RUM <![CDATA[>=]]> #{startRow}
+			AND RUM <![CDATA[<=]]> #{endRow}
+	</select>
+
+	<!-- 리뷰 총 개수 조회 -->
+	<select id="reviewListCount" parameterType="long" resultType="long">
+		SELECT COUNT(R.REVIEW_SEQ) AS COUNT
+		FROM REVIEW R, (
+						SELECT PRODUCT_SEQ, STATUS
+						FROM PRODUCT
+						WHERE STATUS = 'Y'
+					   ) P,
+					   (
+						SELECT ORDER_NO, STATUS
+						FROM A_ORDER
+						WHERE STATUS = 'Y'
+					   ) AO
+		WHERE R.ORDER_NO = AO.ORDER_NO
+			AND R.PRODUCT_SEQ = P.PRODUCT_SEQ
+			AND P.PRODUCT_SEQ = #{productSeq}
+	</select>
+
+	<!-- 리뷰 조회 -->
+	<select id="reviewSelect" parameterType="long" resultMap="ReviewResultMap">
+		SELECT REVIEW_SEQ,
+			   NVL(AU.USER_ID, '') AS USER_ID,
+			   NVL(R.ORDER_NO, 0) AS ORDER_NO,
+			   NVL(TO_CHAR(R.REG_DATE, 'YYYY/MM/DD'), '') AS REG_DATE,
+			   NVL(R.PRODUCT_SEQ, 0) AS PRODUCT_SEQ,
+			   NVL(R.REVIEW_CONTENT, '') AS REVIEW_CONTENT,
+               NVL(P.PRODUCT_NAME, '') AS PRODUCT_NAME
+		FROM REVIEW R, A_USER AU, PRODUCT P
+		WHERE REVIEW_SEQ = #{value}
+			AND R.USER_ID = AU.USER_ID
+            AND R.PRODUCT_SEQ = P.PRODUCT_SEQ
+	</select>
+
+	<!-- 리뷰 수정 -->
+	<update id="reviewUpdate" parameterType="com.icia.web.model.Review">
+		UPDATE REVIEW
+		SET REVIEW_CONTENT = #{reviewContent}
+		WHERE REVIEW_SEQ = #{reviewSeq}
+	</update>
+
+	<!-- 리뷰 개수 -->
+	<select id="reviewCnt" parameterType="long" resultType="long">
+		SELECT COUNT(REVIEW_SEQ)
+		FROM REVIEW
+		WHERE PRODUCT_SEQ = #{value}
+	</select>
+
+	<!-- 리뷰 삭제 -->
+	<delete id="reviewDelete" parameterType="long">
+		DELETE FROM REVIEW
+		WHERE REVIEW_SEQ = #{value}
+	</delete>
+</mapper>

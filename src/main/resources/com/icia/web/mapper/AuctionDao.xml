@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icia.web.dao.AuctionDao">
+
+<resultMap type="com.icia.web.model.VoteUpload" id="auctionListResultMap">
+	<id column= "AUC_SEQ" property= "aucSeq" />
+	<result column= "VR_SEQ" property= "vrSeq" />
+	<result column= "VR_TITLE" property= "vrTitle" />
+	<result column= "VR_CONTENT" property= "vrContent" />
+	<result column= "USER_ID" property= "userId" />
+	<result column= "AUC_STATUS" property= "aucStatus" />
+	<result column= "USER_NAME" property= "userName" />
+	<result column= "CATEGORY_NO" property= "categoryNo" />
+	<result column= "VR_START_PRICE" property= "vrStartPrice" />
+</resultMap>
+
+<resultMap type="com.icia.web.model.AucCur" id="aucCurResultMap">
+	<id column= "AUC_CUR_SEQ" property= "aucCurSeq" />
+	<result column= "AUC_SEQ" property= "aucSeq" />
+	<result column= "USER_ID" property= "userId" />
+	<result column= "USER_NICK" property= "userNick" />
+	<result column= "AUC_CUR_BUY_TIME" property= "aucCurBuyTime" />
+	<result column= "AUC_CUR_PRICE" property= "aucCurPrice" />
+		<result column= "STATUS" property= "status" />
+</resultMap>
+
+<resultMap type="com.icia.web.model.Auction" id="auctionResultMap" >
+	<id column= "AUC_SEQ" property= "aucSeq" />
+	<result column= "CATEGORY_NO" property= "categoryNo" />
+	<result column= "VR_SEQ" property= "vrSeq" />
+	<result column= "USER_ID" property= "userId" />
+	<result column= "STATUS" property= "status" />
+	<result column= "AUC_START_TIME" property= "aucStartTime" />
+	<result column= "AUC_END_TIME" property= "aucEndTime" />
+	<result column= "AUC_BUY_PRICE" property= "aucBuyPrice" />
+	<result column= "USER_NAME" property= "userName" />
+	<result column= "VR_TITLE" property= "vrTitle" />
+</resultMap>
+
+<resultMap type="com.icia.web.model.Comment" id="commentResultMap">
+<id column="CMT_SEQ" property="cmtSeq"/>
+<result column ="USER_ID" property="userId"/>
+<result column ="USER_NICK" property="userNick"/>
+<result column ="AUC_SEQ" property="aucSeq"/>
+<result column ="CMT_GROUP" property="cmtGroup"/>
+<result column ="CMT_ORDER" property="cmtOrder"/>
+<result column ="CMT_INDENT" property="cmtIndent"/>
+<result column ="CMT_CONTENT" property="cmtContent"/>
+<result column ="CMT_PARENT" property="cmtParent"/>
+<result column ="REG_DATE" property="regDate"/>
+</resultMap>
+
+<resultMap type="com.icia.web.model.MyPageNmailSend" id="myPageNmailResultMap">
+<id column="AUC_CUR_SEQ" property="aucCurSeq"/>
+<result column ="AUC_SEQ" property="aucSeq"/>
+<result column ="AUC_CUR_PRICE" property="aucCurPrice"/>
+<result column ="AUC_CUR_BUY_TIME" property="aucCurBuyTime"/>
+<result column ="AC_USER_ID" property="acUserId"/>
+<result column ="AC_USER_EMAIL" property="acUserEmail"/>
+<result column ="VR_TITLE" property="vrTitle"/>
+<result column ="ART_USER_NAME" property="artUserName"/>
+</resultMap>
+
+<resultMap type="com.icia.web.model.AucEvent" id="aucEventResultMap">
+	<id column="AE_SEQ" property="aeSeq"/>
+	<result column="ADM_ID" property="admId"/>
+	<result column="AE_START_TIME" property="aeStartTime"/>
+	<result column="AE_END_TIME" property="aeEndTime"/>
+	<result column="AE_BUY_PRICE" property="aeBuyPrice"/>
+	<result column="AE_TITLE" property="aeTitle"/>
+	<result column="STATUS" property="status"/>
+	<result column="AE_START_PRICE" property="aeStartPrice"/>
+	<result column="AE_PRODUCT_TITLE" property="aeProductTitle"/>
+</resultMap>
+	   
+<select id="auctionListSelect" resultMap="auctionListResultMap">
+SELECT E.AUC_SEQ AS AUC_SEQ, 
+	   E.VR_SEQ AS VR_SEQ, 
+	   E.STATUS AS AUC_STATUS,
+       VR_TITLE, 
+       V.USER_ID AS USER_ID, 
+       V.CATEGORY_NO AS CATEGORY_NO, 
+       V.VR_START_PRICE,
+       U.USER_NAME AS USER_NAME
+  FROM VOTE_UPLOAD V, A_USER U,(SELECT AUC_SEQ, VR_SEQ, USER_ID, STATUS, TO_CHAR(AUC_START_TIME, 'YYYYMM') AS AUC_START_TIME
+                                  FROM AUCTION 
+                                 WHERE STATUS = 'R' OR STATUS = 'Y'
+                                )E
+ WHERE E.VR_SEQ = V.VR_SEQ
+   AND E.USER_ID = U.USER_ID
+ORDER BY E.STATUS DESC, CATEGORY_NO
+</select>
+
+<select id="auctionDetail" parameterType="long" resultMap="auctionListResultMap">
+SELECT A.VR_SEQ AS VR_SEQ, 
+	   VR_TITLE, 
+	   VR_CONTENT, 
+	   V.CATEGORY_NO AS CATEGORY_NO, 
+	   VR_START_PRICE, 
+	   U.USER_NAME AS USER_NAME,
+	   A.STATUS AS AUC_STATUS
+  FROM AUCTION A, VOTE_UPLOAD V, A_USER U
+ WHERE A.VR_SEQ = V.VR_SEQ
+   AND V.USER_ID = U.USER_ID
+   AND A.AUC_SEQ = #{value}
+</select>
+
+<select id="aucCurListSelect" parameterType="long" resultMap="aucCurResultMap">
+SELECT RUM,
+       AUC_CUR_SEQ,
+       AUC_SEQ,
+       USER_ID,
+       USER_NICK,
+       AUC_CUR_BUY_TIME,
+       AUC_CUR_PRICE
+FROM(SELECT ROWNUM AS RUM,
+            AUC_CUR_SEQ,
+            AUC_SEQ,
+            USER_ID,
+            USER_NICK,
+            AUC_CUR_BUY_TIME,
+            AUC_CUR_PRICE
+     FROM(SELECT AUC_CUR_SEQ,
+                 AUC_SEQ,
+                 A.USER_ID AS USER_ID,
+                 U.USER_NICK AS USER_NICK,
+                 TO_CHAR(AUC_CUR_BUY_TIME, 'HH24:MI:SS') AS AUC_CUR_BUY_TIME,
+                 NVL(AUC_CUR_PRICE, 0) AS AUC_CUR_PRICE
+            FROM AUC_CUR A, A_USER U
+           WHERE AUC_SEQ = #{value}
+             AND A.USER_ID = U.USER_ID
+       ORDER BY AUC_CUR_BUY_TIME DESC))
+WHERE RUM  <![CDATA[>=]]> 1 AND RUM  <![CDATA[<=]]> 5
+</select>
+
+<select id="auctionSelect" parameterType="long" resultMap="auctionResultMap">
+SELECT
+    AUC_SEQ,
+    CATEGORY_NO,
+    VR_SEQ,
+    USER_ID,
+    NVL(STATUS, 'N') AS STATUS,
+    NVL(AUC_START_TIME, '12') AS AUC_START_TIME,
+    NVL(AUC_END_TIME, '15') AS AUC_END_TIME,
+    NVL(AUC_BUY_PRICE, 0) AS AUC_BUY_PRICE
+FROM AUCTION
+WHERE AUC_SEQ =  #{value}
+</select>
+
+<select id="aucCurSelect" parameterType="com.icia.web.model.AucCur" resultMap="aucCurResultMap">
+SELECT AUC_CUR_SEQ,
+	   AUC_SEQ,
+	   USER_ID,
+	   AUC_CUR_BUY_TIME,
+	   AUC_CUR_PRICE,
+	   STATUS
+  FROM AUC_CUR
+ WHERE USER_ID = #{userId}
+   AND AUC_SEQ = #{aucSeq}
+   AND STATUS = 'N'
+</select>
+
+<insert id="aucCurPriceInsert" parameterType="com.icia.web.model.AucCur">
+<selectKey resultType = "long" keyProperty="aucCurSeq" order="BEFORE">
+SELECT SEQ_AUC_CUR_SEQ.NEXTVAL FROM DUAL
+</selectKey>
+
+INSERT INTO AUC_CUR (
+    AUC_CUR_SEQ,
+    AUC_SEQ,
+    USER_ID,
+    AUC_CUR_BUY_TIME,
+    AUC_CUR_PRICE,
+    STATUS) 
+VALUES (#{aucCurSeq}, #{aucSeq}, #{userId}, SYSDATE, #{aucCurPrice}, 'N')
+</insert>
+
+<update id="userChargeUpdate" parameterType="com.icia.web.model.AucCur">
+UPDATE A_USER
+SET USER_CHARGE = #{userCharge}
+WHERE USER_ID = #{userId}
+</update>
+
+<delete id="aucCurPriceDelete" parameterType="com.icia.web.model.AucCur">
+DELETE FROM AUC_CUR
+ WHERE USER_ID = #{userId}
+   AND AUC_SEQ = #{aucSeq}
+   AND STATUS = 'N'
+</delete>
+
+<!-- 댓글 리스트 조회 -->
+<select id ="commentList" parameterType="long" resultMap="commentResultMap">
+SELECT 
+    CMT_SEQ,
+    NVL(U.USER_ID,'') AS USER_ID,
+    NVL(U.USER_NICK,'') AS USER_NICK,
+    NVL(A.AUC_SEQ,0) AS AUC_SEQ,
+    NVL(C.CMT_CONTENT,'') AS CMT_CONTENT,
+    NVL(TO_CHAR(C.REG_DATE,'YYYY.MM.DD HH24:MI:SS'),'') AS REG_DATE
+FROM A_COMMENT C, A_USER U, (SELECT AUC_SEQ, STATUS
+                               FROM AUCTION 
+                             )A
+WHERE C.USER_ID = U.USER_ID
+  AND C.AUC_SEQ = A.AUC_SEQ
+  AND A.AUC_SEQ = #{value}
+ ORDER BY C.REG_DATE DESC
+</select>
+
+<!-- 댓글 등록 -->
+<insert id="commentInsert" parameterType="com.icia.web.model.Comment">
+<selectKey resultType="long" keyProperty="cmtSeq" order="BEFORE">		<!-- keyProperty hibbsSeq랑 values의 hiBbsSeq 이름이 일치해야함. -->
+SELECT SEQ_CMT_SEQ.NEXTVAL FROM DUAL
+</selectKey>
+INSERT INTO A_COMMENT(CMT_SEQ,
+				      USER_ID,
+				      AUC_SEQ,
+				      CMT_GROUP,
+				      CMT_ORDER,
+				      CMT_INDENT,
+				      CMT_CONTENT,
+				      CMT_PARENT,
+				      REG_DATE)
+VALUES(#{cmtSeq},
+	   #{userId},
+	   #{aucSeq},
+	   #{cmtGroup}, 
+	   #{cmtOrder},
+	   #{cmtIndent}, 
+	   #{cmtContent},
+	   #{cmtParent}, 
+	   SYSDATE)
+</insert>
+
+<update id="aucCurChangeToY" parameterType="string">
+UPDATE AUC_CUR
+   SET STATUS = 'Y'
+ WHERE STATUS = 'N'
+   AND AUC_CUR_SEQ IN (SELECT AUC_CUR_SEQ
+					   FROM (SELECT AUC_CUR_SEQ,
+					         ROW_NUMBER() OVER(PARTITION BY A.AUC_SEQ ORDER BY C.AUC_CUR_PRICE DESC, TO_TIMESTAMP(C.AUC_CUR_BUY_TIME, 'HH24:MI:SS')) AS ROW_NUM
+					        FROM AUCTION A, AUC_CUR C
+					       WHERE C.STATUS = 'N'
+					       	 AND A.STATUS = 'N'
+					         AND TO_CHAR(AUC_CUR_BUY_TIME, 'YYYYMM') = #{value}
+					         AND C.AUC_SEQ = A.AUC_SEQ
+					    )S
+    WHERE S.ROW_NUM = 1
+)
+</update>
+
+<select id="myPageNmailSendSelect" parameterType="string" resultMap="myPageNmailResultMap">
+SELECT C.AUC_CUR_SEQ AS AUC_CUR_SEQ, 
+       C.AUC_SEQ AS AUC_SEQ, 
+       C.AUC_CUR_PRICE AS AUC_CUR_PRICE, 
+       C.USER_ID AS AC_USER_ID, 
+       U.USER_EMAIL AS AC_USER_EMAIL, 
+       TO_CHAR(AUC_CUR_BUY_TIME, 'YYYY.MM') AS AUC_CUR_BUY_TIME,
+       VR_TITLE,
+       (SELECT A1.USER_NAME FROM A_USER A1 WHERE A1.USER_ID = E.USER_ID) AS ART_USER_NAME  
+  FROM AUC_CUR C, A_USER U, (SELECT A.AUC_SEQ AS AUC_SEQ, V.VR_TITLE AS VR_TITLE, A.USER_ID AS USER_ID
+                               FROM AUCTION A, VOTE_UPLOAD V
+                              WHERE A.VR_SEQ = V.VR_SEQ
+                             ) E
+ WHERE C.STATUS = 'Y'
+   AND TO_CHAR(AUC_CUR_BUY_TIME, 'YYYYMM') = #{value}
+   AND C.AUC_SEQ = E.AUC_SEQ
+   AND C.USER_ID = U.USER_ID
+</select>
+
+<update id="auctionStatusToY" >
+UPDATE AUCTION
+SET STATUS = 'Y'
+WHERE STATUS = 'R'
+</update>
+
+<update id="auctionStatusToN" >
+UPDATE AUCTION
+SET STATUS = 'N'
+WHERE STATUS = 'Y'
+</update>
+
+<!-- 경매 결과 -->
+<select id="aucResultList" parameterType="com.icia.web.model.Auction" resultMap="auctionResultMap">
+SELECT RNUM
+       AUC_SEQ,
+       CATEGORY_NO,
+       VR_SEQ,
+       VR_TITLE,
+       USER_ID,
+       USER_NAME,
+       AUC_START_TIME,
+       AUC_BUY_PRICE 
+       FROM (SELECT ROWNUM AS RNUM,
+                    AUC_SEQ,
+                    CATEGORY_NO,
+                    VR_SEQ,
+                    VR_TITLE,
+                    USER_ID,
+                    USER_NAME,
+                    AUC_START_TIME,
+                    AUC_BUY_PRICE  
+             FROM  (SELECT AUC_SEQ,
+                         NVL(A.CATEGORY_NO,0) AS CATEGORY_NO,
+                         NVL(A.VR_SEQ,0) AS VR_SEQ,
+                         NVL(V.VR_TITLE,'') AS VR_TITLE,
+                         NVL(V.USER_ID,'') AS USER_ID,
+                         NVL(U.USER_NAME,'') AS USER_NAME,
+                         NVL(AUC_START_TIME,'') AS AUC_START_TIME,
+                         NVL(AUC_BUY_PRICE,0) AS AUC_BUY_PRICE   
+                    FROM AUCTION A, VOTE_UPLOAD V, A_USER U
+                WHERE A.VR_SEQ = V.VR_SEQ
+                       AND V.USER_ID = U.USER_ID
+                       AND A.STATUS = 'N' 
+                       <if test='searchDate != null and searchDate != "" '>  
+                       AND TO_CHAR(A.AUC_START_TIME, 'MM') = #{searchDate}
+                       </if>
+                      ORDER BY AUC_START_TIME DESC)
+                )   
+WHERE RNUM <![CDATA[>=]]> #{startRow}
+  AND RNUM <![CDATA[<=]]> #{endRow}
+</select>
+
+
+<!-- 경매 결과 건수 -->
+<select id="aucResultListCount" parameterType="com.icia.web.model.Auction" resultType="long">
+SELECT COUNT(A.AUC_SEQ)
+  FROM AUCTION A, CATEGORY C, VOTE_UPLOAD V, A_USER U
+ WHERE A.CATEGORY_NO = C.CATEGORY_NO
+   AND A.VR_SEQ = V.VR_SEQ
+   AND V.USER_ID = U.USER_ID
+   AND A.STATUS = 'N'
+<if test='searchDate != null and searchDate != "" '>  
+   AND TO_CHAR(A.AUC_START_TIME, 'MM') = #{searchDate}
+</if>    
+</select>
+
+<!-- 돈 돌려주기 -->
+<select id="chargeReturnSelect" parameterType="string" resultMap="aucCurResultMap">
+SELECT C.AUC_CUR_PRICE AS AUC_CUR_PRICE,
+	   C.USER_ID AS USER_ID 
+  FROM AUC_CUR C, AUCTION A
+ WHERE C.AUC_SEQ = A.AUC_SEQ
+   AND TO_CHAR(A.AUC_START_TIME, 'YYYYMM') = #{value}
+   AND A.STATUS = 'N'
+   AND C.STATUS = 'N'    
+</select>
+
+<update id="chargeReturnUpdate" parameterType="com.icia.web.model.AucCur">
+UPDATE A_USER
+   SET USER_CHARGE = USER_CHARGE + #{aucCurPrice}
+ WHERE USER_ID = #{userId}   
+</update>
+
+<update id="aucCurStatusUpdate" parameterType="String">
+UPDATE AUC_CUR
+  SET STATUS = 'C'
+WHERE TO_CHAR(AUC_CUR_BUY_TIME, 'YYYYMM') = #{value}
+  AND STATUS = 'N'
+</update>
+
+<!--#####################이벤트 경매 리스트 조회#####################-->
+<select id="aucEventList" resultMap="aucEventResultMap">
+SELECT AE_SEQ,
+       ADM_ID,
+       AE_START_TIME,
+       AE_END_TIME,
+       AE_BUY_PRICE,
+       AE_TITLE,
+       STATUS,
+       AE_START_PRICE
+FROM (SELECT ROWNUM AS RNUM,
+		      AE_SEQ,
+		      ADM_ID,
+		      AE_START_TIME,
+		      AE_END_TIME,
+		      AE_BUY_PRICE,
+		      AE_TITLE,
+		      STATUS,
+		      AE_START_PRICE
+		FROM (SELECT AE_SEQ,
+				     NVL(A.ADM_ID,'') AS ADM_ID,
+				     NVL(AE_START_TIME,'') AS AE_START_TIME,
+				     NVL(AE_END_TIME,'') AS AE_END_TIME,
+				     NVL(AE_BUY_PRICE,'') AS AE_BUY_PRICE,
+				     NVL(AE_TITLE,'') AS AE_TITLE,
+				     NVL(STATUS,'N') AS STATUS,
+				     NVL(AE_START_PRICE,0) AS AE_START_PRICE
+			    FROM AUC_EVENT E, ADMIN A
+		       WHERE E.ADM_ID = A.ADM_ID))
+WHERE RNUM <![CDATA[>=]]> #{startRow}
+  AND RNUM <![CDATA[<=]]> #{endRow}
+</select>
+
+<select id="aucEventDetail" parameterType="long" resultMap="aucEventResultMap">
+SELECT AE_SEQ,
+	   NVL(AE_TITLE,'') AS AE_TITLE,
+	   NVL(AE_START_PRICE,'') AS AE_START_PRICE,
+	   NVL(AE_PRODUCT_TITLE,'') AS AE_PRODUCT_TITLE,
+	   STATUS
+  FROM AUC_EVENT
+ WHERE AE_SEQ = #{value}
+</select>
+
+<select id="aucEventListCount" resultType="long">
+SELECT COUNT(AE_SEQ)
+  FROM AUC_EVENT E, ADMIN A
+ WHERE E.ADM_ID = A.ADM_ID
+   AND NOT STATUS = 'N'
+</select>
+
+<resultMap type="com.icia.web.model.AucEventCur" id="AeCurSelectResultMap">
+	<id column= "AE_CUR_SEQ" property= "aeCurSeq" />
+	<result column= "AE_SEQ" property= "aeSeq" />
+	<result column= "USER_ID" property= "userId" />
+	<result column= "AE_CUR_BUY_TIME" property= "aeCurBuyTime" />
+	<result column= "AE_CUR_PRICE" property= "aeCurPrice" />
+	<result column= "STATUS" property= "status" />
+</resultMap>
+
+<!--#####################이벤트 경매 입찰#####################-->
+<select id="aeCurSelect" parameterType="com.icia.web.model.AucEventCur" resultMap="AeCurSelectResultMap">
+SELECT AE_CUR_SEQ,
+       AE_SEQ,
+       USER_ID,
+       AE_CUR_BUY_TIME,
+       AE_CUR_PRICE,
+       STATUS
+FROM AUC_EVENT_CUR
+WHERE AE_SEQ = #{aeSeq}
+AND USER_ID = #{userId}
+</select>
+
+<delete id="aeCurPriceDelete" parameterType="com.icia.web.model.AucEventCur">
+DELETE FROM AUC_EVENT_CUR
+ WHERE USER_ID = #{userId}
+   AND AE_SEQ = #{aeSeq}
+   AND STATUS = 'N'
+</delete>
+
+<insert id="aeCurPriceInsert" parameterType="com.icia.web.model.AucEventCur">
+<selectKey resultType = "long" keyProperty="aeCurSeq" order="BEFORE">
+SELECT SEQ_AE_CUR_SEQ.NEXTVAL FROM DUAL
+</selectKey>
+INSERT INTO AUC_EVENT_CUR (AE_CUR_SEQ,
+                           AE_SEQ,
+                           USER_ID,
+                           AE_CUR_BUY_TIME,
+                           AE_CUR_PRICE,
+                           STATUS) 
+VALUES (#{aeCurSeq}, #{aeSeq}, #{userId}, SYSDATE, #{aeCurPrice}, 'N')
+</insert>
+
+<update id="userChargeUpdateAeVer" parameterType="com.icia.web.model.AucEventCur">
+UPDATE A_USER
+SET USER_CHARGE = #{userCharge}
+WHERE USER_ID = #{userId}
+</update>
+
+<select id="aucCurSelectForAuctionPriceUpdate" parameterType="string" resultMap="aucCurResultMap">
+SELECT AUC_SEQ, 
+	   AUC_CUR_PRICE
+  FROM AUC_CUR
+ WHERE STATUS = 'Y'
+   AND TO_CHAR(AUC_CUR_BUY_TIME, 'YYYYMM') = #{value}
+</select>
+
+<update id="aucBuyPriceUpdate" parameterType="com.icia.web.model.AucCur">
+UPDATE AUCTION
+SET AUC_BUY_PRICE = #{aucCurPrice}
+WHERE AUC_SEQ = #{aucSeq}
+</update>
+
+</mapper>

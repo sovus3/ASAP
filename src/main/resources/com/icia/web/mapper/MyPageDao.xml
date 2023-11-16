@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icia.web.dao.MyPageDao">
+
+<resultMap type="com.icia.web.model.QnaBoard" id="myPageQnaBoardResultMap">
+	<id column="QA_SEQ" property ="qaSeq"/>
+	<result column="USER_ID" property ="userId"/>
+	<result column="USER_NICK" property ="userNick"/>
+	<result column="ADM_ID" property ="admId"/>
+	<result column="QA_TITLE" property ="qaTitle"/>
+	<result column="QA_CONTENT" property ="qaContent"/>
+	<result column= "QA_GROUP" property ="qaGroup"/>
+	<result column= "QA_ORDER" property ="qaOrder"/>
+	<result column= "QA_INDENT" property ="qaIndent"/>
+	<result column= "QA_PARENT" property ="qaParent"/>
+	<result column= "REG_DATE" property ="regDate"/>
+	<result column= "STATUS" property ="status"/>
+</resultMap>
+
+<resultMap type="com.icia.web.model.MyPage" id="myPageResultMap">
+	<result column="AUC_CUR_SEQ" property="aucCurSeq"/>
+	<result column="AE_SEQ" property="aeSeq"/>
+	<result column="VR_SEQ" property="vrSeq"/>
+	<result column="AE_TITLE" property="aeTitle"/>    
+	<result column="VR_TITLE" property="vrTitle"/>
+	<result column="CATEGORY_NO" property="categoryNo"/>
+	<result column="USER_ID" property="userId"/>
+    <result column="AUC_CUR_BUY_TIME" property="aucCurBuyTime"/>
+    <result column="AUC_CUR_PRICE" property="aucCurPrice"/>
+    <result column="AE_CUR_BUY_TIME" property="aeCurBuyTime"/>
+    <result column="AE_CUR_PRICE" property="aeCurPrice"/>
+    <result column="AUC_START_TIME" property="aucStartTime"/>
+    <result column="AUC_BUY_PRICE" property="aucBuyPrice"/>
+    <result column="STATUS" property="aucCurStatus"/>
+	<result column="STATUS" property="aeStatus"/>	
+</resultMap>
+
+<!-- 주문 상세 내역 -->
+<resultMap type="com.icia.web.model.OrderDetail" id="OrderDetailResultMap">
+	<id column="USER_ID" property="userId" />
+	<result column="ORDER_NO" property="orderNo" />
+	<result column="PRODUCT_SEQ" property="productSeq" />
+	<result column="ORDER_DETAIL_QUANTITY" property="orderDetailQuantity" />
+	<result column="ORDER_DETAIL_PRICE" property="orderDetailPrice" />
+	<result column="STATUS" property="status" />		
+	<result column="PRODUCT_NAME" property="productName" />
+	<result column="REVIEW_SEQ" property="reviewSeq" />
+</resultMap>
+
+<!--결제내역-->
+<resultMap type="com.icia.web.model.Pay" id="PayResultMap">
+	<id column="ORDER_NO" property="orderNo" />
+	<result column="USER_ID" property="userId" />
+	<result column="PAY_REAL_PRICE" property="payRealPrice" />
+	<result column="PAY_POINT_PRICE" property="payPointPrice" />
+	<result column="PAY_TOTAL_PRICE" property="payTotalPrice" />
+	<result column="STATUS" property="status" />		
+	<result column="PRODUCT_NAME" property="productName" />
+	<result column="PRODUCT_SEQ" property="productSeq" />		
+	<result column="CNT" property="cnt" />
+</resultMap>
+
+<resultMap type="com.icia.web.model.VoteUpload" id="voteUploadResultMap">
+	<id column="VR_SEQ" property="vrSeq" />
+	<result column="USER_ID" property="userId" />
+	<result column="CATEGORY_NO" property="categoryNo" />
+	<result column="USER_NICK" property="userNick" />
+	<result column="USER_NAME" property="userName" />
+	<result column="CATEGORY_NAME" property="categoryName" />
+	<result column="VR_TITLE" property="vrTitle" />
+	<result column="VR_CONTENT" property="vrContent" />
+	<result column="VR_TOTAL_CNT" property="vrTotalCnt" />
+	<result column="VR_START_PRICE" property="vrStartPrice" />
+	<result column="STATUS" property="status" />
+	<result column="REG_DATE" property="regDate" />
+	<result column="VR_START_DATE" property="vrStartDate" />
+	<result column="VR_END_DATE" property="vrEndDate" />
+</resultMap>
+
+<!-- 상품 상세내역 조회, 추후 위치 변경 예정 -->
+<select id="orderDSelect" parameterType="com.icia.web.model.OrderDetail" resultMap ="OrderDetailResultMap">
+	SELECT USER_ID,
+		   ORDER_NO,
+		   PRODUCT_SEQ,
+		   PRODUCT_NAME,
+		   ORDER_DETAIL_QUANTITY,
+		   ORDER_DETAIL_PRICE,
+		   STATUS
+	FROM(
+		 SELECT ROWNUM AS RNUM,
+				USER_ID,
+				ORDER_NO,
+				PRODUCT_SEQ,
+				PRODUCT_NAME,
+				ORDER_DETAIL_QUANTITY,
+				ORDER_DETAIL_PRICE,
+				STATUS
+		 FROM(
+			  SELECT NVL(OD.USER_ID, '') AS USER_ID,
+					 NVL(OD.ORDER_NO, 0) AS ORDER_NO,
+					 NVL(OD.PRODUCT_SEQ, 0) AS PRODUCT_SEQ,
+					 NVL(P.PRODUCT_NAME, '') AS PRODUCT_NAME,
+					 NVL(OD.ORDER_DETAIL_QUANTITY, 0) AS ORDER_DETAIL_QUANTITY,
+					 NVL(OD.ORDER_DETAIL_PRICE, 0) AS ORDER_DETAIL_PRICE,
+					 NVL(OD.STATUS, 'N') AS STATUS
+			  FROM ORDER_DETAIL OD, PRODUCT P
+			  WHERE OD.ORDER_NO IN (
+									SELECT ORDER_NO
+									FROM A_ORDER
+									WHERE STATUS = 'Y'
+										AND ORDER_NO = #{orderNo}
+								   )
+				AND OD.PRODUCT_SEQ = P.PRODUCT_SEQ
+			  ORDER BY OD.ORDER_NO DESC
+			 )
+		)
+	WHERE RNUM <![CDATA[>=]]> #{startRow}
+		AND RNUM <![CDATA[<=]]> #{endRow}
+</select>
+
+<!-- 상품 상세 총 개수 -->
+<select id="orderDCount" parameterType="long" resultType="long">
+	SELECT COUNT(OD.ORDER_NO) AS COUNT
+	FROM ORDER_DETAIL OD, PRODUCT P
+	WHERE OD.ORDER_NO IN (
+						  SELECT ORDER_NO
+						  FROM A_ORDER
+						  WHERE STATUS = 'Y'
+							AND ORDER_NO = #{value}
+						 )
+		AND OD.PRODUCT_SEQ = P.PRODUCT_SEQ
+</select>
+
+<!-- 상품리뷰 작성시 상태 업데이트 -->
+<update id="orderDUpdate" parameterType="com.icia.web.model.OrderDetail">
+	UPDATE ORDER_DETAIL
+	SET STATUS = 'Y'
+	WHERE ORDER_NO = #{orderNo}
+		AND PRODUCT_SEQ = #{productSeq}
+</update>
+
+<!-- 결제 내역 -->
+<select id="payList" parameterType="com.icia.web.model.Pay" resultMap ="PayResultMap">
+	SELECT ORDER_NO,
+	       USER_ID,
+	       PRODUCT_SEQ,
+	       PRODUCT_NAME,
+	       PAY_REAL_PRICE,
+	       PAY_POINT_PRICE,
+	       PAY_TOTAL_PRICE,
+	       STATUS,
+		   CNT
+	FROM(
+		 SELECT ROWNUM AS RNUM,
+		 		B.ORDER_NO AS ORDER_NO,
+				NVL(B.USER_ID, '') AS USER_ID,
+				NVL(B.PRODUCT_SEQ, 0) AS PRODUCT_SEQ,
+				NVL(P.PRODUCT_NAME, '') AS PRODUCT_NAME,
+				NVL(B.PAY_REAL_PRICE, 0) AS PAY_REAL_PRICE,
+				NVL(B.PAY_POINT_PRICE, 0) AS PAY_POINT_PRICE,
+				NVL(B.PAY_TOTAL_PRICE, 0) AS PAY_TOTAL_PRICE,
+				NVL(B.STATUS, 'N') AS STATUS,
+				NVL(B.CNT, 1) AS CNT
+		 FROM PRODUCT P,(
+						 SELECT A.ORDER_NO,
+								A.USER_ID,
+								A.PRODUCT_SEQ,
+								A.PAY_REAL_PRICE,
+								A.PAY_POINT_PRICE,
+								A.PAY_TOTAL_PRICE,
+								A.STATUS,
+								A.CNT
+						 FROM (
+							   SELECT ROW_NUMBER() OVER(PARTITION BY P.ORDER_NO, P.PAY_REAL_PRICE ORDER BY P.ORDER_NO DESC) AS RNK,
+									  P.ORDER_NO,
+									  O.PRODUCT_SEQ,
+									  P.USER_ID,
+									  P.PAY_REAL_PRICE,
+									  P.PAY_POINT_PRICE,
+									  P.PAY_TOTAL_PRICE,
+									  P.STATUS,
+									  (
+									   SELECT COUNT(D.ORDER_NO)
+									   FROM ORDER_DETAIL  D 
+									   WHERE O.ORDER_NO = D.ORDER_NO
+									  ) AS CNT
+							   FROM PAY P, ORDER_DETAIL O
+							   WHERE O.ORDER_NO = P.ORDER_NO
+								AND P.STATUS = 'Y'
+								AND P.USER_ID = #{userId}
+							  ) A
+						 WHERE RNK = 1
+						) B
+		 WHERE P.PRODUCT_SEQ = B.PRODUCT_SEQ
+		 ORDER BY  B.ORDER_NO DESC
+	    )
+	WHERE RNUM <![CDATA[>=]]> #{startRow}
+		AND RNUM <![CDATA[<=]]> #{endRow}
+</select>
+
+<!-- 결제 총 개수 -->
+<select id="payListCount" parameterType ="String" resultType="long">
+	SELECT COUNT(B.ORDER_NO) AS COUNT
+	FROM PRODUCT P,(
+					SELECT A.ORDER_NO,
+						   A.USER_ID,
+						   A.PRODUCT_SEQ,
+						   A.PAY_REAL_PRICE,
+						   A.PAY_POINT_PRICE,
+						   A.PAY_TOTAL_PRICE,
+						   A.STATUS
+					FROM (
+						  SELECT ROW_NUMBER() OVER(PARTITION BY P.ORDER_NO, P.PAY_REAL_PRICE ORDER BY P.ORDER_NO DESC) AS RNK,
+								 P.ORDER_NO,
+								 O.PRODUCT_SEQ,
+								 P.USER_ID,
+								 P.PAY_REAL_PRICE,
+								 P.PAY_POINT_PRICE,
+								 P.PAY_TOTAL_PRICE,
+								 P.STATUS
+						  FROM PAY P, ORDER_DETAIL O
+						  WHERE O.ORDER_NO = P.ORDER_NO
+							AND P.STATUS = 'Y'
+							AND P.USER_ID = #{value}
+						 ) A
+					WHERE RNK = 1
+				   ) B
+ 	WHERE P.PRODUCT_SEQ = B.PRODUCT_SEQ
+</select>
+	
+<!-- 상품 이름 가져오기 -->
+<select id="reviewPName" parameterType="long" resultType = "String">
+	SELECT 
+		   NVL(PRODUCT_NAME,'') AS PRODUCT_NAME			   
+	FROM PRODUCT 
+	WHERE PRODUCT_SEQ = #{value}
+</select>
+
+<!-- 투표 업로드 개수 -->
+<select id="voteUpload" parameterType ="com.icia.web.model.VoteUpload" resultMap="voteUploadResultMap">
+ SELECT VR_SEQ,
+         USER_ID,
+         CATEGORY_NO,
+         VR_TITLE,
+         VR_CONTENT,
+         VR_TOTAL_CNT,
+         VR_START_PRICE,
+         STATUS,
+         REG_DATE,
+         VR_START_DATE,
+         VR_END_DATE
+    FROM ( SELECT ROWNUM AS RNUM,
+                  VR_SEQ,
+                  USER_ID,
+                  CATEGORY_NO,
+                  VR_TITLE,
+                  VR_CONTENT,
+                  VR_TOTAL_CNT,
+                  VR_START_PRICE,
+                  STATUS,
+                  REG_DATE,
+                  VR_START_DATE,
+                  VR_END_DATE
+             FROM ( SELECT VR_SEQ,
+                           NVL(USER_ID, '') AS USER_ID,
+                           NVL(CATEGORY_NO,'')AS CATEGORY_NO,
+                           NVL(VR_TITLE, '') AS VR_TITLE,
+                           NVL(VR_CONTENT, '') AS VR_CONTENT,
+                           NVL(VR_TOTAL_CNT, 0) AS VR_TOTAL_CNT,
+                           NVL(VR_START_PRICE, 0) AS VR_START_PRICE,
+                           NVL(STATUS, 'N') AS STATUS,
+                           NVL(TO_CHAR(REG_DATE, 'YYYY.MM.DD HH24:MI:SS'), '') AS REG_DATE,
+                           NVL(VR_START_DATE, '') AS VR_START_DATE,
+                           NVL(VR_END_DATE, '') AS VR_END_DATE
+                      FROM VOTE_UPLOAD
+                     WHERE USER_ID = #{userId}
+                     ORDER BY REG_DATE DESC))					    
+     WHERE RNUM <![CDATA[>=]]> #{startRow}
+	AND RNUM <![CDATA[<=]]> #{endRow}
+</select>
+
+<select id="voteUploadCount" parameterType="String" resultType="long" >
+SELECT COUNT(VR_SEQ) AS COUNT
+  FROM VOTE_UPLOAD
+ WHERE USER_ID = #{value}
+</select>
+
+<select id="voteList" parameterType="com.icia.web.model.VoteUpload" resultMap="voteUploadResultMap">
+SELECT VR_SEQ,
+       VL_USER_ID,
+       USER_ID,
+       USER_NAME,
+       CATEGORY_NO,
+       CATEGORY_NAME,
+       VR_TITLE,
+       VR_CONTENT,
+       VR_TOTAL_CNT,
+       VR_START_PRICE,
+       STATUS,
+       REG_DATE,
+       VR_START_DATE,
+       VR_END_DATE
+ FROM ( SELECT ROWNUM AS RNUM,   
+               VR_SEQ,
+               VL_USER_ID,
+               USER_ID,
+               USER_NAME,
+               CATEGORY_NO,
+               CATEGORY_NAME,
+               VR_TITLE,
+               VR_CONTENT,
+               VR_TOTAL_CNT,
+               VR_START_PRICE,
+               STATUS,
+               REG_DATE,
+               VR_START_DATE,
+               VR_END_DATE
+         FROM ( SELECT VL.VR_SEQ,
+                       NVL(VL.VL_USER_ID,'') AS VL_USER_ID,
+                       NVL(VU.USER_ID, '') AS USER_ID,
+                       NVL(A.USER_NAME,'') AS USER_NAME,
+                       NVL(VU.CATEGORY_NO, 00) AS CATEGORY_NO,
+                       NVL(C.CATEGORY_NAME, '') AS CATEGORY_NAME,
+                       NVL(VR_TITLE, '') AS VR_TITLE,
+                       NVL(VR_CONTENT, '') AS VR_CONTENT,
+                       NVL(VR_TOTAL_CNT, 0) AS VR_TOTAL_CNT,
+                       NVL(VR_START_PRICE, 0) AS VR_START_PRICE,
+                       NVL(VU.STATUS, 'N') AS STATUS,
+                       NVL(TO_CHAR(REG_DATE, 'YYYY.MM.DD HH24:MI:SS'), '') AS REG_DATE,
+                       NVL(VR_START_DATE, '') AS VR_START_DATE,
+                       NVL(VR_END_DATE, '') AS VR_END_DATE
+                  FROM VOTE_UPLOAD VU, VOTE_LIST VL, A_USER A, CATEGORY C
+                 WHERE VL.VL_USER_ID = #{userId}
+                   AND VU.VR_SEQ = VL.VR_SEQ(+)
+                   AND VU.USER_ID = A.USER_ID
+                   AND VU.CATEGORY_NO = C.CATEGORY_NO		                                      
+			<if test = 'categoryNo != null and categoryNo != 0'> 
+                         AND VU.CATEGORY_NO = #{categoryNo}
+                  </if>
+                ORDER BY REG_DATE DESC))					    
+    WHERE RNUM <![CDATA[>=]]> #{startRow}
+AND RNUM <![CDATA[<=]]> #{endRow}
+
+</select>
+
+<select id="voteListCount" parameterType="com.icia.web.model.VoteUpload" resultType="long">
+SELECT COUNT(VL_USER_ID) AS COUNT
+  FROM VOTE_LIST VL, VOTE_UPLOAD VU, CATEGORY C
+ WHERE VL_USER_ID = #{vlUserId}
+   AND VL.VR_SEQ = VU.VR_SEQ
+   AND VU.CATEGORY_NO = C.CATEGORY_NO
+<if test = 'categoryNo != null and categoryNo != 0'> 
+   AND C.CATEGORY_NO = #{categoryNo}
+</if>
+</select>
+
+<!-- 문의 내역 -->
+<select id="myPageQnaBoardSelect" parameterType="com.icia.web.model.QnaBoard" resultMap="myPageQnaBoardResultMap">
+SELECT RNUM,
+       QA_SEQ,
+       USER_ID,
+       ADM_ID,
+       QA_TITLE,
+       QA_CONTENT,
+       QA_GROUP,  
+       QA_ORDER,	
+       QA_INDENT,  
+       QA_PARENT, 
+       REG_DATE,
+       STATUS
+FROM (SELECT ROWNUM AS RNUM,
+             QA_SEQ,
+             USER_ID,
+             ADM_ID,
+             QA_TITLE,
+             QA_CONTENT,
+             QA_GROUP,  
+             QA_ORDER,	
+             QA_INDENT,  
+             QA_PARENT, 
+             REG_DATE,
+             STATUS
+       FROM (SELECT QA_SEQ,
+                    NVL(Q.USER_ID,'') AS USER_ID,
+                    NVL(ADM_ID,'') AS ADM_ID,
+                    NVL(QA_TITLE,'') AS QA_TITLE,
+                    NVL(QA_CONTENT,'') AS QA_CONTENT,
+                    NVL(QA_GROUP,'') AS QA_GROUP,
+                    NVL(QA_ORDER,'') AS QA_ORDER,
+                    NVL(QA_INDENT,'') AS QA_INDENT,
+                    NVL(QA_PARENT,'') AS QA_PARENT,
+                    NVL(TO_CHAR(REG_DATE,'YYYY.MM.DD'),'') AS REG_DATE,
+                    Q.STATUS AS STATUS
+               FROM QNA_BOARD Q, A_USER U
+              WHERE QA_GROUP IN (SELECT QA_SEQ
+                                   FROM QNA_BOARD
+                                  WHERE USER_ID = #{userId}
+                                    AND STATUS = 'Y')
+                AND Q.USER_ID = U.USER_ID(+)
+           ORDER BY QA_GROUP DESC, QA_ORDER ASC))
+WHERE RNUM <![CDATA[>=]]> #{startRow}  
+  AND RNUM <![CDATA[<=]]> #{endRow}
+
+</select>
+
+<select id="myPageQnaTotalCount" parameterType="String" resultType="long">
+SELECT COUNT(QA_SEQ) AS TOTAL_COUNT
+  FROM QNA_BOARD
+ WHERE QA_GROUP IN (SELECT QA_SEQ
+                      FROM QNA_BOARD
+                     WHERE USER_ID = #{userId}
+                     AND STATUS = 'Y')
+</select>
+
+<select id="myPageQnaDetail" parameterType="long" resultMap="myPageQnaBoardResultMap">
+SELECT Q.QA_SEQ AS QA_SEQ,
+	   Q.USER_ID AS USER_ID,
+	   NVL(QA_TITLE,'') AS QA_TITLE,
+       CASE WHEN U.USER_NICK IS NULL THEN '관리자'
+             WHEN U.USER_NICK IS NOT NULL THEN U.USER_NICK
+       END AS USER_NICK,
+       NVL(QA_CONTENT,'') AS QA_CONTENT,
+       REG_DATE
+  FROM QNA_BOARD Q, A_USER U
+ WHERE QA_SEQ = #{value}
+   AND Q.USER_ID = U.USER_ID(+)
+</select>
+
+<!-- 내 입찰내역 조회 -->
+<select id="mpAucCurList" parameterType="com.icia.web.model.MyPage" resultMap="myPageResultMap">
+SELECT AUC_CUR_SEQ,
+       VR_SEQ,
+	   VR_TITLE,
+	   CATEGORY_NO,
+	   USER_ID,
+	   AUC_CUR_BUY_TIME,
+	   AUC_CUR_PRICE,
+	   STATUS
+FROM(SELECT ROWNUM AS RNUM,
+		    AUC_CUR_SEQ,
+            VR_SEQ,
+		    CATEGORY_NO,
+		   	USER_ID,
+		    VR_TITLE,
+		    AUC_CUR_BUY_TIME,
+		    AUC_CUR_PRICE,
+		    STATUS
+	FROM(SELECT AUC_CUR_SEQ,
+                NVL(V.VR_SEQ,0) AS VR_SEQ,
+			    NVL(V.VR_TITLE,'') AS VR_TITLE,
+			    NVL(V.CATEGORY_NO, 00) AS CATEGORY_NO,
+			    C.USER_ID AS USER_ID,
+			    NVL(TO_CHAR(C.AUC_CUR_BUY_TIME,'YYYY-MM-DD HH24:MI:SS'),'') AS AUC_CUR_BUY_TIME, 
+			    NVL(C.AUC_CUR_PRICE,0) AS AUC_CUR_PRICE,
+			    NVL(C.STATUS,'N') AS STATUS
+		   FROM AUC_CUR C, 
+			    AUCTION A,
+			    VOTE_UPLOAD V    
+		  WHERE C.AUC_SEQ = A.AUC_SEQ
+			AND A.VR_SEQ  = V.VR_SEQ
+			AND C.USER_ID = #{userId}
+			ORDER BY AUC_CUR_BUY_TIME DESC))
+WHERE RNUM <![CDATA[>=]]> #{startRow}
+  AND RNUM <![CDATA[<=]]> #{endRow}
+</select>
+
+
+<!-- 내 입찰건수 조회 (페이징 처리) -->
+<select id="mpAucCurListCount" parameterType="String" resultType="long">
+SELECT COUNT(AUC_CUR_SEQ)
+  FROM AUC_CUR C, 
+  	   AUCTION A, 
+  	   VOTE_UPLOAD V
+ WHERE C.AUC_SEQ = A.AUC_SEQ
+   AND A.VR_SEQ = V.VR_SEQ
+   AND C.USER_ID = #{value}
+</select>
+
+<select id="mpAucResultList" parameterType="com.icia.web.model.MyPage" resultMap="myPageResultMap">
+SELECT VR_TITLE,
+       CATEGORY_NO,
+       AUC_START_TIME,
+       AUC_BUY_PRICE,
+       VR_SEQ
+FROM(SELECT ROWNUM AS RNUM,
+            VR_TITLE,
+            CATEGORY_NO,
+            AUC_START_TIME,
+            AUC_BUY_PRICE,
+            VR_SEQ
+      FROM (SELECT VR_TITLE, 
+		           A.CATEGORY_NO AS CATEGORY_NO, 
+		           TO_CHAR(AUC_START_TIME, 'YYYY.MM.DD') AS AUC_START_TIME, 
+		           AUC_BUY_PRICE,
+		           A.VR_SEQ AS VR_SEQ
+		     FROM AUCTION A, VOTE_UPLOAD V
+		    WHERE A.USER_ID = #{userId}
+		      AND A.STATUS = 'N'
+		      AND A.VR_SEQ = V.VR_SEQ 
+		 ORDER BY AUC_START_TIME DESC))
+WHERE RNUM <![CDATA[>=]]> #{startRow} 
+  AND RNUM <![CDATA[<=]]> #{endRow}
+</select>
+
+<select id="mpAucResultListCount" parameterType="String" resultType="long">
+SELECT COUNT(AUC_SEQ)
+  FROM AUCTION A, VOTE_UPLOAD V
+ WHERE A.USER_ID = #{value}
+   AND A.STATUS = 'N'
+   AND A.VR_SEQ = V.VR_SEQ
+</select>
+
+<select id="mpAucEventList" parameterType="com.icia.web.model.MyPage" resultMap="myPageResultMap">
+SELECT AE_CUR_SEQ,
+	   AE_SEQ,
+       USER_ID,
+       AE_TITLE,
+       AE_CUR_PRICE,
+       AE_CUR_BUY_TIME,
+       STATUS
+FROM(SELECT ROWNUM AS RNUM,
+	        AE_CUR_SEQ,
+	        AE_SEQ,
+	        USER_ID,
+	        AE_TITLE,
+	        AE_CUR_PRICE,
+	        AE_CUR_BUY_TIME,
+	        STATUS
+	   FROM(SELECT AE_CUR_SEQ,
+	   			   NVL(A.AE_SEQ, 0) AS AE_SEQ,
+		           NVL(C.USER_ID,'') AS USER_ID,
+		           NVL(A.AE_TITLE,'') AS AE_TITLE,
+		           NVL(AE_CUR_PRICE,'') AS AE_CUR_PRICE,
+		           NVL(TO_CHAR(AE_CUR_BUY_TIME,'YYYY-MM-DD HH24:MI:SS'),'') AS AE_CUR_BUY_TIME,
+		           NVL(C.STATUS,'') AS STATUS
+	          FROM AUC_EVENT A, AUC_EVENT_CUR C
+	         WHERE A.AE_SEQ = C.AE_SEQ
+	           AND C.USER_ID = #{userId}
+	      ORDER BY AE_CUR_BUY_TIME DESC))
+WHERE RNUM <![CDATA[>=]]> #{startRow}
+  AND RNUM <![CDATA[<=]]> #{endRow}
+</select>
+
+<select id="mpAucEventListCount" parameterType="String" resultType="long">
+SELECT COUNT(AE_CUR_SEQ)   
+  FROM AUC_EVENT A, AUC_EVENT_CUR C
+ WHERE A.AE_SEQ = C.AE_SEQ
+   AND C.USER_ID = #{value}
+</select>
+
+</mapper>
