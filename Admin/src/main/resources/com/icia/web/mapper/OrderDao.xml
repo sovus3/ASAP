@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icia.web.dao.OrderDao">
+<resultMap type="com.icia.web.model.Order" id="OrderResultMap">
+	<id column="ORDER_NO" property="orderNo" />
+	<result column="USER_ID" property="userId" />
+	<result column="ORDER_DATE" property="orderDate" />
+	<result column="STATUS" property="status" />
+	<result column="ORDER_TOTAL_PRICE" property="orderTotalPrice" />
+	<result column="ORDER_TOTAL_QUANTITY" property="orderTotalQuantity" />
+</resultMap>
+
+<resultMap type="com.icia.web.model.Cart" id="CartResultMap">
+	<id column="USER_ID" property="userId" />
+	<result column="PRODUCT_SEQ" property="productSeq" />
+	<result column="PRODUCT_NAME" property="productName" />
+	<result column="CART_QUANTITY" property="cartQuantity" />
+	<result column="CART_PRICE" property="cartPrice" />
+</resultMap>
+
+<resultMap type="com.icia.web.model.Pay" id="PayResultMap">
+	<id column="ORDER_NO" property="orderNo" />
+	<result column="USER_ID" property="userId" />
+	<result column="PAY_REAL_PRICE" property="payRealPrice" />
+	<result column="PAY_POINT_PRICE" property="payPointPrice" />
+	<result column="PAY_TOTAL_PRICE" property="payTotalPrice" />		
+	<result column="STATUS" property="status" />
+	<result column="REG_DATE" property="regDate" />
+</resultMap>
+	
+<resultMap type="com.icia.web.model.Product" id="ProductResultMap">
+	<id column="PRODUCT_SEQ" property="productSeq" />
+	<result column="PRODUCT_NAME" property="productName" />
+	<result column="PRODUCT_PRICE" property="productPrice" />
+	<result column="PRODUCT_QUANTITY" property="productQuantity" />
+	<result column="STATUS" property="status" />
+	<result column="PRODUCT_START_DATE" property="productStartDate" />
+	<result column="PRODUCT_END_DATE" property="productEndDate" />
+	<result column="PRODUCT_DETAIL" property="productDetail" />
+	<result column="ORDER_DETAIL_QUANTITY" property="orderDetailQuantity" />
+</resultMap>
+
+
+<select id="orderSeq" resultType="int">
+	SELECT SEQ_ORDER_NO.NEXTVAL FROM DUAL
+</select>
+<insert id="orderInsert" parameterType="com.icia.web.model.Order">
+INSERT INTO A_ORDER (ORDER_NO,
+					 USER_ID,
+					 ORDER_DATE,
+					 STATUS,
+					 ORDER_TOTAL_PRICE,
+					 ORDER_TOTAL_QUANTITY) 
+VALUES (#{orderNo},
+		#{userId},
+		SYSDATE,
+		'N',
+		#{orderTotalPrice},
+		#{orderTotalQuantity})
+</insert>
+
+<select id="orderSelect" parameterType="String">
+SELECT O.USER_ID,
+	   O.ORDER_NO
+  FROM A_ORDER O
+ WHERE USER_ID = ${userId}
+   AND O.ORDER_DATE = (SELECT MAX(O2.ORDER_DATE)
+					     FROM A_ORDER O2
+					    WHERE O2.USER_ID = O.USER_ID)
+</select>
+
+<insert id="orderDetailInsert" parameterType="com.icia.web.model.OrderDetail">
+	INSERT INTO ORDER_DETAIL (
+	USER_ID,
+	ORDER_NO,
+	PRODUCT_SEQ,
+	ORDER_DETAIL_QUANTITY,
+	ORDER_DETAIL_PRICE,
+	STATUS
+	) 
+	VALUES 
+	(
+	#{userId},
+	#{orderNo},
+	#{productSeq},
+	#{orderDetailQuantity},
+	#{orderDetailPrice},
+	'N'
+	)
+</insert>
+
+<delete id="cartOrderDelete" parameterType="String">
+	DELETE FROM CART
+	WHERE USER_ID = #{userId}
+</delete>
+
+<insert id="payInsert" parameterType="com.icia.web.model.Pay">
+INSERT INTO PAY (ORDER_NO,
+			     USER_ID,
+			     PAY_REAL_PRICE,
+			     PAY_POINT_PRICE,
+			     PAY_TOTAL_PRICE,
+			     STATUS,
+			     REG_DATE) 
+VALUES (#{orderNo},
+	    #{userId},
+	    #{payRealPrice},
+	    #{payPointPrice},
+	    #{payTotalPrice},
+	    'N',
+	    SYSDATE
+)
+</insert>
+
+<update id="userChargeUpdate" parameterType="com.icia.web.model.User">
+	UPDATE A_USER
+	SET USER_CHARGE = #{userCharge}
+	WHERE USER_ID = #{userId}
+</update>
+
+<update id="orderStatusUpdate" parameterType="int">
+	UPDATE A_ORDER
+	SET STATUS = 'Y'
+	WHERE ORDER_NO = #{orderNo}
+</update>
+
+<update id="payStatusUpdate" parameterType="int">
+	UPDATE PAY
+	SET STATUS = 'Y'
+	WHERE ORDER_NO = #{orderNo}
+</update>
+
+
+<update id="productQuanUpdate" parameterType="com.icia.web.model.Product">
+	UPDATE PRODUCT
+	SET PRODUCT_QUANTITY = #{productQuantity}
+	WHERE PRODUCT_SEQ = #{productSeq}
+</update>
+
+<select id="selectProductQuan" parameterType="com.icia.web.model.Product" resultMap="ProductResultMap">
+	SELECT P.PRODUCT_SEQ,
+	NVL(P.PRODUCT_QUANTITY,'') AS PRODUCT_QUANTITY,
+	NVL(O.ORDER_DETAIL_QUANTITY,'') AS ORDER_DETAIL_QUANTITY
+	FROM PRODUCT P, ORDER_DETAIL O
+	WHERE O.ORDER_NO = #{orderNo}
+	AND P.PRODUCT_SEQ = O.PRODUCT_SEQ
+</select>
+
+</mapper>

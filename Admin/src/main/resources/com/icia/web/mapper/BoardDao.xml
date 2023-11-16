@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icia.web.dao.BoardDao">
+	<!-- 게시물 resultMap -->
+	<resultMap type="com.icia.web.model.NoticeBoard" id="noticeBoardResultMap">
+		<id column = "NB_SEQ" property = "nbSeq" />
+		<result column = "ADM_ID" property = "admId" />
+		<result column = "NB_TITLE" property = "nbTitle" />
+		<result column = "NB_CONTENT" property = "nbContent" />
+		<result column = "REG_DATE" property = "regDate" />
+	</resultMap>
+ 
+	<resultMap type="com.icia.web.model.QnaBoard" id="QnaBoardResultMap">
+		<id column="QA_SEQ" property ="qaSeq"/>
+		<result column="USER_ID" property ="userId"/>
+		<result column="USER_NICK" property ="userNick"/>
+		<result column="ADM_ID" property ="admId"/>
+		<result column="QA_TITLE" property ="qaTitle"/>
+		<result column="QA_CONTENT" property ="qaContent"/>
+		<result column= "QA_GROUP" property ="qaGroup"/>
+		<result column= "QA_ORDER" property ="qaOrder"/>
+		<result column= "QA_INDENT" property ="qaIndent"/>
+		<result column= "QA_PARENT" property ="qaParent"/>
+		<result column= "REG_DATE" property ="regDate"/>
+		<result column= "STATUS" property ="status"/>
+	</resultMap>
+
+	<insert id ="NoticeBoardInsert" parameterType="com.icia.web.model.NoticeBoard">
+		<selectKey resultType="long" keyProperty="nbSeq" order="BEFORE">		<!-- keyProperty hibbsSeq랑 values의 hiBbsSeq 이름이 일치해야함. -->
+			SELECT SEQ_NB_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO NOTICE_BOARD (
+		    NB_SEQ,
+		    ADM_ID,
+		    NB_TITLE,
+		    NB_CONTENT,
+		    REG_DATE
+		) VALUES (
+		    #{nbSeq},
+		    #{admId},
+		    #{nbTitle},
+		    #{nbContent},
+		    SYSDATE
+		)
+	</insert>  
+
+	<select id="NoticeBoardList" parameterType="com.icia.web.model.NoticeBoard" resultMap="noticeBoardResultMap">
+	
+		SELECT NB_SEQ,
+		       ADM_ID,
+		       NB_TITLE,
+		       NB_CONTENT,
+		       REG_DATE
+		       FROM( 
+		       		SELECT ROWNUM RUNM,
+	                       NB_SEQ,
+	                       NVL(ADM_ID,'') AS ADM_ID,
+	                       NVL(NB_TITLE,'') AS NB_TITLE,
+	                       NVL(NB_CONTENT,'') AS NB_CONTENT,
+	                       NVL(TO_CHAR(REG_DATE,'YYYY.MM.DD'),'') AS REG_DATE
+					FROM NOTICE_BOARD
+		<if test = 'searchType != null and searchType != "" and searchValue != null and searchValue != ""'> 
+			<choose>
+				<when test ='searchType == "1"'>
+					WHERE UPPER(NB_TITLE) LIKE '%'||UPPER(#{searchValue})||'%'
+				</when>
+				<when test='searchType == "2"'>
+					WHERE DBMS_LOB.INSTR(NB_CONTENT, #{searchValue})>0
+				</when>
+			</choose>  
+		</if>
+					ORDER BY NB_SEQ DESC)
+		      WHERE RUNM <![CDATA[>=]]> #{startRow}
+				AND RUNM <![CDATA[<=]]> #{endRow}
+	</select>
+
+	<select id="NoticeBoardListCount" parameterType="com.icia.web.model.NoticeBoard" resultType="long">
+		SELECT COUNT (NB_SEQ) AS CNT
+		FROM NOTICE_BOARD 
+		<if test = 'searchType != null and searchType != "" and searchValue != null and searchValue != ""'> 
+			<choose>
+			   <when test ='searchType == "1"'>
+		       WHERE NB_TITLE LIKE '%'||#{searchValue}||'%'
+		       </when>
+		       <when test='searchType == "2"'>
+		       WHERE DBMS_LOB.INSTR(NB_CONTENT, #{searchValue})>0
+		       </when>
+		    </choose>  
+		</if>
+	</select>
+
+	<select id="NoticeBoardSelect" parameterType="long" resultMap="noticeBoardResultMap">
+		SELECT NB_SEQ,
+		       NVL(A.ADM_ID,'') AS ADM_ID,
+		       NVL(NB_TITLE,'') AS NB_TITLE,
+		       NVL(NB_CONTENT,'') AS NB_CONTENT,
+		       NVL(TO_CHAR(REG_DATE,'YYYY.MM.DD'),'') AS REG_DATE
+		  FROM NOTICE_BOARD A, ADMIN B
+		 WHERE NB_SEQ = #{value}
+		   AND A.ADM_ID = B.ADM_ID
+	</select>
+
+	<update id ="NoticeBoardUpdate" parameterType="com.icia.web.model.NoticeBoard" >
+		UPDATE NOTICE_BOARD
+		SET NB_TITLE = #{nbTitle},
+		    NB_CONTENT = #{nbContent}
+		WHERE NB_SEQ = #{nbSeq}
+	</update>
+
+	<delete id ="NoticeBoardDelete" parameterType="long">
+		DELETE FROM NOTICE_BOARD
+		WHERE NB_SEQ = #{value}
+	</delete>
+
+	<insert id="QnaBoardInsert" parameterType="com.icia.web.model.QnaBoard">
+		<!-- 선행처리기(시퀀스번호 생성) -->
+		<selectKey resultType="long" keyProperty="qaSeq" order="BEFORE">		<!-- keyProperty hibbsSeq랑 values의 hiBbsSeq 이름이 일치해야함. -->
+			SELECT SEQ_QA_SEQ.NEXTVAL FROM DUAL
+		</selectKey>			<!--selectKey란 밑에 있는 쿼리를 진행하기 전에 실행해라 keyProperty는 어떤 인스턴스 변수에 대입할래~~ 이런 의미. -->
+	
+		INSERT INTO QNA_BOARD (
+		    QA_SEQ,
+		    USER_ID,
+		    ADM_ID,
+		    QA_TITLE,
+		    QA_CONTENT,
+		    QA_GROUP,
+		    QA_ORDER,
+		    QA_INDENT,
+		    QA_PARENT,
+		    REG_DATE,
+		    STATUS
+		) VALUES (
+		    #{qaSeq},
+		    #{userId},
+		    #{admId},
+		    #{qaTitle},
+		    #{qaContent},
+		    #{qaSeq},
+		    #{qaOrder},
+		    #{qaIndent},
+		    #{qaParent},
+		    SYSDATE,
+		    'Y'
+		)
+	</insert>
+
+	<!-- 게시판 리스트  -->
+	<select id ="QnaBoardList" parameterType="com.icia.web.model.QnaBoard" resultMap="QnaBoardResultMap">
+		SELECT QA_SEQ,
+		       USER_ID,
+		       USER_NICK,
+		       ADM_ID,
+		       QA_TITLE,
+		       QA_CONTENT,
+		       QA_GROUP,
+		       QA_ORDER,
+		       QA_INDENT,
+		       QA_PARENT,
+		       REG_DATE,
+		       STATUS
+		  FROM (SELECT ROWNUM RUNM,
+		               QA_SEQ,
+		               USER_ID,
+		               USER_NICK,
+		               ADM_ID,
+		               QA_TITLE,
+		               QA_CONTENT,
+		               QA_GROUP,
+		               QA_ORDER,
+		               QA_INDENT,
+		               QA_PARENT,
+		               REG_DATE,
+		               STATUS
+		          FROM ( SELECT QA_SEQ,
+		                        NVL(A.USER_ID,'') AS USER_ID,
+		                        CASE WHEN B.USER_NICK IS NULL THEN '관리자'
+		                             WHEN B.USER_NICK IS NOT NULL THEN B.USER_NICK
+		                        END AS USER_NICK,
+		                        NVL(A.ADM_ID,'') AS ADM_ID,
+		                        NVL(QA_TITLE,'') AS QA_TITLE,
+		                        NVL(QA_CONTENT,'') AS QA_CONTENT,
+		                        NVL(QA_GROUP,'') AS QA_GROUP,
+		                        NVL(QA_ORDER,'') AS QA_ORDER,
+		                        NVL(QA_INDENT,'') AS QA_INDENT,
+		                        NVL(QA_PARENT,'') AS QA_PARENT,
+		                        NVL(TO_CHAR(REG_DATE,'YYYY.MM.DD'),'') AS REG_DATE,
+		                        A.STATUS
+		                   FROM QNA_BOARD A, A_USER B
+		                  WHERE A.USER_ID = B.USER_ID(+)
+		<if test='searchType != null and searchType != "" and searchValue != null and searchValue != "" '>             
+		    <choose>
+		    	<when test='searchType == "1"'>           
+		               AND QA_TITLE LIKE '%' || #{searchValue} || '%'
+		        </when>
+		        <when test='searchType == "2"'>       
+		               AND DBMS_LOB.INSTR(QA_CONTENT, #{searchValue} )>0
+		        </when>      
+		     </choose>          
+		</if>               
+		               ORDER BY QA_GROUP DESC, QA_ORDER ASC))
+		WHERE RUNM <![CDATA[>=]]> #{startRow}
+		  AND RUNM <![CDATA[<=]]> #{endRow}
+	</select>
+
+	<!--총 게시물  -->
+	<select id="QnaBoardListCount" parameterType="com.icia.web.model.QnaBoard" resultType ="long">
+		SELECT COUNT (QA_SEQ) AS CNT
+		  FROM QNA_BOARD A, A_USER B, ADMIN C
+		 WHERE A.USER_ID = B.USER_ID(+)
+		   AND A.ADM_ID = C.ADM_ID(+)
+		<if test='searchType != null and searchType != "" and searchValue != null and searchValue != "" '>             
+		    <choose>
+		    	<when test='searchType == "1"'>           
+		              AND QA_TITLE LIKE '%' || #{searchValue} || '%'
+		        </when>
+		        <when test='searchType == "2"'>       
+		              AND DBMS_LOB.INSTR(QA_CONTENT, #{searchValue} )>0
+		        </when>      
+		     </choose>          
+		</if>
+	</select>
+
+	<!-- 게시물 조회 -->
+	<select id="QnaBoardSelect" parameterType="long" resultMap="QnaBoardResultMap">
+		SELECT QA_SEQ,
+		       NVL(A.USER_ID,'') AS USER_ID,
+		       CASE WHEN B.USER_NICK IS NULL THEN '관리자'
+		            WHEN B.USER_NICK IS NOT NULL THEN B.USER_NICK
+		       END AS USER_NICK,
+		       NVL(A.ADM_ID,'') AS ADM_ID,
+		       NVL(QA_TITLE,'') AS QA_TITLE,
+		       NVL(QA_CONTENT,'') AS QA_CONTENT,
+		       NVL(QA_GROUP,'') AS QA_GROUP,
+		       NVL(QA_ORDER,'') AS QA_ORDER,
+		       NVL(QA_INDENT,'') AS QA_INDENT,
+		       NVL(QA_PARENT,'') AS QA_PARENT,
+		       NVL(TO_CHAR(REG_DATE,'YYYY.MM.DD'),'') AS REG_DATE,
+		       A.STATUS
+		  FROM QNA_BOARD A, A_USER B
+		 WHERE QA_SEQ = #{value}
+		   AND A.USER_ID = B.USER_ID(+)
+	</select>
+
+	<!-- HIBBS_GROUP의 HIBBS_ORDER 수정 / 계층형 게시판 답글 작성시 order 수정 -->
+	<update id="QnaBoardGroupOrderUpdate" parameterType="com.icia.web.model.QnaBoard">
+		UPDATE QNA_BOARD
+		   SET QA_ORDER = QA_ORDER +1	<!-- AND에 있는 order값에 +1 -->
+		 WHERE QA_GROUP = #{qaGroup}
+		   AND QA_ORDER <![CDATA[>=]]> #{qaOrder}	<!-- 컨트롤러에 있는 order 값 -->
+	</update>
+
+	<!-- 게시물 답글 등록 -->
+	<insert id ="QnaBoardReplyInsert" parameterType="com.icia.web.model.QnaBoard">
+		<!-- 선행처리기(시퀀스번호 생성) -->
+		<selectKey resultType="long" keyProperty="qaSeq" order="BEFORE">
+		SELECT SEQ_QA_SEQ.NEXTVAL FROM DUAL								<!-- keyProperty hibbsSeq랑 values의 hiBbsSeq 이름이 일치해야함. -->
+		</selectKey>
+		
+		INSERT INTO QNA_BOARD (
+		    QA_SEQ,
+		    USER_ID,
+		    ADM_ID,
+		    QA_TITLE,
+		    QA_CONTENT,
+		    QA_GROUP,
+		    QA_ORDER,
+		    QA_INDENT,
+		    QA_PARENT,
+		    REG_DATE,
+		    STATUS
+		) VALUES (
+		    #{qaSeq},
+		    #{userId},
+		    #{admId},
+		    #{qaTitle},
+		    #{qaContent},
+		    #{qaGroup},
+		    #{qaOrder},
+		    #{qaIndent},
+		    #{qaParent},
+		    SYSDATE,
+		    'Y'
+		)
+	</insert>
+
+	<!-- 게시물 수정 -->
+	<update id="QnaBoardUpdate" parameterType="com.icia.web.model.QnaBoard">
+		UPDATE QNA_BOARD
+		SET QA_TITLE = #{qaTitle},
+		    QA_CONTENT = #{qaContent}
+		WHERE QA_SEQ = #{qaSeq}
+	</update>
+
+	<!-- 게시물 삭제 -->
+	<delete id="QnaBoardDelete" parameterType ="com.icia.web.model.QnaBoard">
+		UPDATE QNA_BOARD
+		SET QA_TITLE = '삭제한 게시물입니다.',
+		    STATUS = 'N'
+		WHERE QA_SEQ = #{qaSeq}
+	</delete>
+
+	<!-- 게시물 삭제 -->
+	<delete id="QnaBoardDelete2" parameterType ="long">
+		DELETE FROM QNA_BOARD
+		WHERE QA_SEQ = #{value}
+	</delete>
+
+	<!-- 게시물 삭제시 답변글 수 조회 -->
+	<select id="QnaBoardAnswersCount" parameterType="long" resultType="int">
+		SELECT COUNT (QA_SEQ) AS CNT
+		FROM QNA_BOARD
+		WHERE QA_PARENT = #{value}
+	</select>
+</mapper>

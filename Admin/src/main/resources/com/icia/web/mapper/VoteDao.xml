@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icia.web.dao.VoteDao">
+	<!-- 작품 리스트 resultMap -->
+	<resultMap type="com.icia.web.model.VoteUpload" id="voteUploadResultMap">
+		<id column="VR_SEQ" property="vrSeq" />
+		<result column="USER_ID" property="userId" />
+		<result column="CATEGORY_NO" property="categoryNo" />
+		<result column="USER_NAME" property="userName" />
+		<result column="CATEGORY_NAME" property="categoryName" />
+		<result column="VR_TITLE" property="vrTitle" />
+		<result column="VR_CONTENT" property="vrContent" />
+		<result column="VR_TOTAL_CNT" property="vrTotalCnt" />
+		<result column="VR_START_PRICE" property="vrStartPrice" />
+		<result column="STATUS" property="status" />
+		<result column="REG_DATE" property="regDate" />
+		<result column="VR_START_DATE" property="vrStartDate" />
+		<result column="VR_END_DATE" property="vrEndDate" />
+	</resultMap>
+	
+	<!-- 일자 관리 resultMap -->
+	<resultMap type ="com.icia.web.model.DateManage" id="voteDateResultMap">
+		<result column="UPLOAD_START_DATE" property="uploadStartDate"/>
+		<result column="UPLOAD_END_DATE" property="uploadEndDate"/>
+	</resultMap>
+	
+	<!-- 작품 리스트 조회 -->
+	<select id="voteUploadList" parameterType="com.icia.web.model.VoteUpload" resultMap="voteUploadResultMap">
+		SELECT VR_SEQ,
+			   USER_ID,
+			   CATEGORY_NO,
+			   USER_NAME,
+               CATEGORY_NAME,
+			   VR_TITLE,
+			   VR_CONTENT,
+			   VR_TOTAL_CNT,
+			   VR_START_PRICE,
+			   STATUS,
+			   REG_DATE,
+			   VR_START_DATE,
+			   VR_END_DATE
+		FROM (
+			  SELECT ROWNUM AS RNUM,
+			  		 VR_SEQ,
+			  		 USER_ID,
+			  		 CATEGORY_NO,
+			  		 USER_NAME,
+                     CATEGORY_NAME,
+			  		 VR_TITLE,
+			  		 VR_CONTENT,
+			  		 VR_TOTAL_CNT,
+			  		 VR_START_PRICE,
+			  		 STATUS,
+			  		 REG_DATE,
+			  		 VR_START_DATE,
+			  		 VR_END_DATE
+			  FROM(
+			  	   SELECT VU.VR_SEQ,
+			  	   		  NVL(AU.USER_ID, '') AS USER_ID,
+			  	   		  NVL(VU.CATEGORY_NO, 00) AS CATEGORY_NO,
+			  	   		  NVL(AU.USER_NAME, '') AS USER_NAME,
+                          NVL(C.CATEGORY_NAME, '') AS CATEGORY_NAME,
+			  	   		  NVL(VU.VR_TITLE, '') AS VR_TITLE,
+			  	   		  NVL(VU.VR_CONTENT, '') AS VR_CONTENT,
+			  	   		  NVL(VU.VR_TOTAL_CNT, 0) AS VR_TOTAL_CNT,
+			  	   		  NVL(VU.VR_START_PRICE, 0) AS VR_START_PRICE,
+			  	   		  NVL(VU.STATUS, 'N') AS STATUS,
+			  	   		  NVL(TO_CHAR(VU.REG_DATE, 'YYYY.MM.DD HH24:MI:SS'), '') AS REG_DATE,
+			  	   		  NVL(VU.VR_START_DATE, '') AS VR_START_DATE,
+                          NVL(VU.VR_END_DATE, '') AS VR_END_DATE
+                   FROM VOTE_UPLOAD VU, A_USER AU, CATEGORY C
+                   WHERE VU.USER_ID = AU.USER_ID
+                    AND VU.CATEGORY_NO = C.CATEGORY_NO
+                    AND VU.STATUS = #{status}
+                    <if test = 'categoryNo != null and categoryNo != 0'> 
+                    AND VU.CATEGORY_NO = #{categoryNo}
+                    </if>
+                    AND VR_START_DATE <![CDATA[<=]]> TO_CHAR(SYSDATE, 'YYYYMMDD')
+                    AND VR_END_DATE <![CDATA[>=]]> TO_CHAR(SYSDATE, 'YYYYMMDD')
+                   ORDER BY VU.VR_SEQ DESC
+                  )
+             )
+	WHERE RNUM <![CDATA[>=]]> #{startRow}
+		AND RNUM <![CDATA[<=]]> #{endRow}
+	</select>
+	
+	<!-- 작품 총 개수 조회 -->
+<select id="voteUploadListCount" parameterType="com.icia.web.model.VoteUpload" resultType="long">
+SELECT COUNT(VU.VR_SEQ) AS COUNT
+  FROM VOTE_UPLOAD VU, A_USER AU, CATEGORY C
+ WHERE VU.USER_ID = AU.USER_ID
+   AND VU.CATEGORY_NO = C.CATEGORY_NO
+   AND VU.STATUS = #{status}
+<if test = 'categoryNo != null and categoryNo != 0'> 
+   AND VU.CATEGORY_NO = #{categoryNo}
+</if>
+   AND VR_START_DATE <![CDATA[<=]]> TO_CHAR(SYSDATE, 'YYYYMMDD')
+   AND VR_END_DATE <![CDATA[>=]]> TO_CHAR(SYSDATE, 'YYYYMMDD')
+</select>
+	
+<!-- 투표날짜 조회 -->
+<select id="dateSelect" parameterType="com.icia.web.model.DateManage" resultMap="voteDateResultMap">
+SELECT UPLOAD_START_DATE,
+	   UPLOAD_END_DATE
+  FROM DATE_MANAGE
+</select>
+	
+	<!-- 투표기간 삽입 -->
+<insert id="voteInsert" parameterType="com.icia.web.model.DateManage">
+INSERT INTO DATE_MANAGE (UPLOAD_START_DATE,
+						 UPLOAD_END_DATE) 
+VALUES(#{uploadStartDate},
+	   #{uploadEndDate})
+</insert>
+	
+<!-- 시퀀스 증가 -->
+<select id="vrSeqSelect" resultType="long">
+	SELECT SEQ_VR_SEQ.NEXTVAL FROM DUAL
+</select>
+
+	<!-- 작품 업로드 -->
+<insert id="voteUploadInsert" parameterType="com.icia.web.model.VoteUpload">
+INSERT INTO VOTE_UPLOAD (VR_SEQ,
+					     USER_ID,
+					     CATEGORY_NO,
+					     VR_TITLE,
+					     VR_CONTENT,
+					     VR_TOTAL_CNT,
+					     VR_START_PRICE,
+					     VR_START_DATE,
+						 VR_END_DATE,
+					     STATUS,
+					     REG_DATE) 
+VALUES (#{vrSeq}, 
+		#{userId}, 
+		#{categoryNo}, 
+		#{vrTitle}, 
+		#{vrContent}, 
+		#{vrTotalCnt}, 
+		#{vrStartPrice}, 
+		#{vrStartDate}, 
+		#{vrEndDate}, 
+		'R', 
+		SYSDATE)
+</insert>
+	
+<!-- 작품 상세설명 조회 -->
+<select id="voteDetail" parameterType="com.icia.web.model.VoteUpload" resultMap="voteUploadResultMap">
+SELECT VU.VR_SEQ,
+       NVL(VU.USER_ID, '') AS USER_ID,
+       NVL(VU.CATEGORY_NO, 00) AS CATEGORY_NO,
+       NVL(AU.USER_NAME, '') AS USER_NAME,
+       NVL(C.CATEGORY_NAME, '') AS CATEGORY_NAME,
+       NVL(VU.VR_TITLE, '') AS VR_TITLE,
+       NVL(VU.VR_CONTENT, '') AS VR_CONTENT,
+       NVL(VU.VR_TOTAL_CNT, 0) AS VR_TOTAL_CNT,
+       NVL(VU.VR_START_PRICE, 0) AS VR_START_PRICE,
+       NVL(VU.STATUS, 'N') AS STATUS,
+       NVL(TO_CHAR(VU.REG_DATE, 'YYYY.MM.DD HH24:MI:SS'), '') AS REG_DATE,
+       NVL(VU.VR_START_DATE, '') AS VR_START_DATE,
+       NVL(VU.VR_END_DATE, '') AS VR_END_DATE
+  FROM VOTE_UPLOAD VU, A_USER AU, CATEGORY C
+ WHERE VU.VR_SEQ = #{vrSeq}
+   AND VU.USER_ID = AU.USER_ID
+   AND VU.CATEGORY_NO = C.CATEGORY_NO
+</select>
+	
+	<!-- 투표 결과 조회 -->
+	<select id="voteResultList" parameterType="com.icia.web.model.VoteUpload" resultMap="voteUploadResultMap">	
+	WITH RankedVotes AS (
+	    SELECT
+	        ROWNUM AS RNUM,
+	        VU.VR_SEQ,
+	        NVL(AU.USER_ID, '') AS USER_ID,
+	        NVL(VU.CATEGORY_NO, 00) AS CATEGORY_NO,
+	        NVL(AU.USER_NAME, '') AS USER_NAME,
+	        NVL(C.CATEGORY_NAME, '') AS CATEGORY_NAME,
+	        NVL(VU.VR_TITLE, '') AS VR_TITLE,
+	        NVL(VU.VR_CONTENT, '') AS VR_CONTENT,
+	        NVL(VU.VR_TOTAL_CNT, 0) AS VR_TOTAL_CNT,
+	        NVL(VU.VR_START_PRICE, 0) AS VR_START_PRICE,
+	        NVL(VU.STATUS, 'N') AS STATUS,
+	        NVL(TO_CHAR(VU.REG_DATE, 'YYYY.MM.DD'), '') AS REG_DATE,
+	        NVL(SUBSTR(VU.VR_START_DATE, 1,6),'') AS VR_START_DATE,
+	        NVL(VU.VR_END_DATE, '') AS VR_END_DATE,
+	        RANK() OVER(PARTITION BY VU.CATEGORY_NO, VU.VR_START_DATE ORDER BY VU.VR_TOTAL_CNT DESC) AS rnk
+	    FROM VOTE_UPLOAD VU
+	    LEFT JOIN A_USER AU ON VU.USER_ID = AU.USER_ID
+	    LEFT JOIN CATEGORY C ON VU.CATEGORY_NO = C.CATEGORY_NO
+	    WHERE VU.STATUS = 'N'
+	        <if test = 'categoryNo != null and categoryNo != 0'> 
+			                 AND VU.CATEGORY_NO = #{categoryNo}
+			</if>)
+	
+			SELECT  VR_SEQ,
+			  		    USER_ID,
+			  		    CATEGORY_NO,
+			  		    USER_NAME,
+		                CATEGORY_NAME,
+			  		    VR_TITLE,
+			  		    VR_CONTENT,
+			  		    VR_TOTAL_CNT,
+			  		    VR_START_PRICE,
+			  		    STATUS,
+			  		    REG_DATE,
+			  		    VR_START_DATE,
+			  		    VR_END_DATE
+				FROM( SELECT ROWNUM AS RNUM,
+				             VR_SEQ,  
+		  		             USER_ID,
+		  		             CATEGORY_NO,
+				  		     USER_NAME,
+				             CATEGORY_NAME,
+				  		     VR_TITLE,
+				  		     VR_CONTENT,
+				  		     VR_TOTAL_CNT,
+				  		     VR_START_PRICE,
+				  		     STATUS,
+				  		     REG_DATE,
+				  		     VR_START_DATE,
+					  		 VR_END_DATE
+						FROM (SELECT VR_SEQ,
+						  		     USER_ID,
+						  		     CATEGORY_NO,
+						  		     USER_NAME,
+						             CATEGORY_NAME,
+						  		     VR_TITLE,
+						  		     VR_CONTENT,
+						  		     VR_TOTAL_CNT,
+						  		     VR_START_PRICE,
+						  		     STATUS,
+						  		     REG_DATE,
+						  		     VR_START_DATE,
+							  		 VR_END_DATE
+								FROM RankedVotes
+								WHERE rnk = 1
+								<if test='searchDate != null and searchDate != "" '>  
+			                       AND VR_START_DATE LIKE '%' || #{searchDate} || '%' 
+			                    </if>
+								ORDER BY VR_START_DATE DESC, CATEGORY_NO ASC))
+			    WHERE RNUM BETWEEN #{startRow} AND #{endRow}
+				   </select>
+	   
+<!-- 작품 총 개수 조회 -->
+<select id="voteResultListCount" parameterType="com.icia.web.model.VoteUpload" resultType="long">
+	SELECT COUNT(VU.VR_SEQ) AS COUNT
+	  FROM VOTE_UPLOAD VU, A_USER AU, CATEGORY C
+       WHERE VU.USER_ID = AU.USER_ID
+         AND VU.CATEGORY_NO = C.CATEGORY_NO
+         AND VU.STATUS = #{status}
+         <if test = 'categoryNo != null and categoryNo != 0'> 
+            AND VU.CATEGORY_NO = #{categoryNo}
+         </if>
+         <if test='searchDate != null and searchDate != "" '>  
+            AND SUBSTR(VR_START_DATE, 5, 2) LIKE '%' || #{searchDate} || '%' 
+         </if>
+         AND VR_START_DATE <![CDATA[<]]> TO_CHAR(SYSDATE, 'YYYYMMDD')
+</select>
+		
+<!-- 어떤 인간이 어떤작품 투표했는지 조회 -->
+<resultMap type ="com.icia.web.model.VoteList" id="voteListResultMap">
+	<result column="VR_SEQ" property="vrSeq"/>
+	<result column="VL_USER_ID" property="vlUserId"/>
+</resultMap>
+	
+	
+	<select id ="voteListSelect" parameterType ="com.icia.web.model.VoteList" resultMap="voteListResultMap">
+		SELECT VR_SEQ, 
+		       VL_USER_ID
+		  FROM VOTE_LIST
+		 WHERE VR_SEQ = #{vrSeq}
+		   AND VL_USER_ID = #{vlUserId}
+	</select>
+	
+	
+	<!-- 투표 작품 데이터 추가 (중복방지) -->
+	<insert id="voteListInsert" parameterType = "com.icia.web.model.VoteList">
+		INSERT INTO 
+		VOTE_LIST(
+       		VR_SEQ,
+         	VL_USER_ID,
+         	VOTE_DATE
+    	)
+		VALUES(
+  			#{vrSeq},
+  			#{vlUserId},
+  			SYSDATE
+    	)
+	</insert>
+	
+	<!-- 작품 투표수 1씩 증가 -->
+	<update id="voteCntUpdate" parameterType ="long">
+		UPDATE VOTE_UPLOAD
+		SET VR_TOTAL_CNT = VR_TOTAL_CNT + 1
+		WHERE VR_SEQ = #{vrSeq}
+	</update>	
+</mapper>

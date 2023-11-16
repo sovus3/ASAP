@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icia.web.dao.IndexDao">
+
+<resultMap type="com.icia.web.model.VoteUpload" id="indexVoteListResultMap">
+	<id column= "AUC_SEQ" property= "aucSeq" />
+	<result column= "VR_SEQ" property= "vrSeq" />
+	<result column= "VR_TITLE" property= "vrTitle" />
+	<result column= "VR_CONTENT" property= "vrContent" />
+	<result column= "USER_ID" property= "userId" />
+	<result column= "AUC_STATUS" property= "aucStatus" />
+	<result column= "USER_NAME" property= "userName" />
+	<result column= "CATEGORY_NO" property= "categoryNo" />
+	<result column= "VR_START_PRICE" property= "vrStartPrice" />
+</resultMap>
+
+<resultMap type="com.icia.web.model.AucEvent" id="indexAucEventResultMap">
+	<id column="AE_SEQ" property="aeSeq"/>
+	<result column="ADM_ID" property="admId"/>
+	<result column="AE_START_TIME" property="aeStartTime"/>
+	<result column="AE_END_TIME" property="aeEndTime"/>
+	<result column="AE_BUY_PRICE" property="aeBuyPrice"/>
+	<result column="AE_TITLE" property="aeTitle"/>
+	<result column="STATUS" property="status"/>
+	<result column="AE_START_PRICE" property="aeStartPrice"/>
+	<result column="AE_PRODUCT_TITLE" property="aeProductTitle"/>
+</resultMap>
+
+<resultMap type="com.icia.web.model.Product" id="indexProductResultMap">
+	<id column="PRODUCT_SEQ" property="productSeq" />
+	<result column="PRODUCT_NAME" property="productName" />
+	<result column="PRODUCT_PRICE" property="productPrice" />
+	<result column="PRODUCT_QUANTITY" property="productQuantity" />
+	<result column="STATUS" property="status" />
+	<result column="PRODUCT_START_DATE" property="productStartDate" />
+	<result column="PRODUCT_END_DATE" property="productEndDate" />
+	<result column="PRODUCT_DETAIL" property="productDetail" />
+</resultMap>
+
+<select id="indexAucList" resultMap="indexVoteListResultMap">
+SELECT V.VR_SEQ AS VR_SEQ,
+       U.USER_NAME AS USER_NAME,
+       V.VR_TITLE AS VR_TITLE,
+       V.VR_CONTENT AS VR_CONTENT,
+       V.CATEGORY_NO AS CATEGORY_NO
+FROM AUCTION A, VOTE_UPLOAD V, A_USER U
+WHERE A.STATUS = 'Y'
+AND A.VR_SEQ = V.VR_SEQ
+AND A.USER_ID = U.USER_ID
+ORDER BY VR_SEQ DESC
+</select>
+
+<select id="indexVoteList" resultMap="indexVoteListResultMap">
+
+SELECT RNUM,
+       VR_SEQ,
+       VR_TITLE,  
+       VR_CONTENT,  
+       CATEGORY_NO,
+       USER_NAME,
+       VR_TOTAL_CNT
+FROM(SELECT ROWNUM AS RNUM,
+            VR_SEQ,
+            VR_TITLE,   
+            VR_CONTENT, 
+            CATEGORY_NO,
+            USER_NAME,
+            VR_TOTAL_CNT
+       FROM(SELECT V.VR_SEQ AS VR_SEQ,
+                   V.VR_TITLE AS VR_TITLE, 
+                   V.VR_CONTENT AS VR_CONTENT,   
+                   V.CATEGORY_NO AS CATEGORY_NO,
+                   U.USER_NAME AS USER_NAME,
+                   V.VR_TOTAL_CNT AS VR_TOTAL_CNT
+              FROM VOTE_UPLOAD V, A_USER U
+             WHERE V.USER_ID = U.USER_ID
+               AND V.STATUS = 'Y'
+          ORDER BY V.VR_TOTAL_CNT DESC, REG_DATE DESC))
+WHERE RNUM <![CDATA[>=]]> 1 AND RNUM <![CDATA[<=]]>  5
+</select>
+
+<select id="indexAucEventList" resultMap="indexAucEventResultMap">
+SELECT AE_SEQ,
+	   AE_TITLE
+  FROM AUC_EVENT
+ WHERE STATUS = 'Y'
+</select>
+
+<select id="indexProcutList" resultMap="indexProductResultMap">
+SELECT PRODUCT_SEQ,
+	   PRODUCT_NAME,
+	   PRODUCT_PRICE
+  FROM PRODUCT
+ WHERE STATUS = 'Y'
+ ORDER BY PRODUCT_SEQ DESC
+</select>
+
+
+</mapper>
