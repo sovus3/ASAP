@@ -78,7 +78,7 @@ ASAP은 무명 작가들의 홍보 및 수익 파이프라인 확대를 위한 �
 ## 🗂️ 프로젝트 구성도
 - **기능 조직도(사용자/관리자)**<br/>
 <img src="https://github.com/sovus3/asapBackUp/assets/131745663/11e4ed1b-196a-43cc-994d-ea3bcc92bb0e" width="400" height="250">
-<img src="https://github.com/sovus3/asapBackUp/assets/131745663/d4afc7dc-22f5-403f-83c8-6b167a8996fe" width="410" height="230"><br/><br/>
+<img src="https://github.com/sovus3/asapBackUp/assets/131745663/d4afc7dc-22f5-403f-83c8-6b167a8996fe" width="410" height="220"><br/><br/>
 
 - **시스템 아키텍처(System Architecture)**
 <img src="./README.assets/SystemArchitecture.png">
