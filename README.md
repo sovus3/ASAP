@@ -5,14 +5,14 @@
 </br>
 
 ## 📋 목차
-1. [웹서비스 소개](https://github.com/sovus3/asapBackUp#-%EC%9B%B9%EC%84%9C%EB%B9%84%EC%8A%A4-%EC%86%8C%EA%B0%9C)
-4. [개발기간](https://github.com/sovus3/asapBackUp#-%EA%B0%9C%EB%B0%9C-%EA%B8%B0%EA%B0%84)
-5. [기술스택](https://github.com/sovus3/asapBackUp#-%EA%B8%B0%EC%88%A0-%EC%8A%A4%ED%83%9D)
-6. [주요기능](https://github.com/sovus3/asapBackUp#%EF%B8%8F-%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5)
-7. [프로젝트구성도](https://github.com/sovus3/asapBackUp#%EF%B8%8F-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B5%AC%EC%84%B1%EB%8F%84)
-8. [UCC영상](https://github.com/sovus3/asapBackUp#-ucc%EC%98%81%EC%83%81)
-9. [팀소개](https://github.com/sovus3/asapBackUp#-%ED%8C%80-%EC%86%8C%EA%B0%9C)
-10. [프로젝트 후기 및 아쉬운 점](https://github.com/sovus3/asapBackUp#-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9B%84%EA%B8%B0-%EB%B0%8F-%EC%95%84%EC%89%AC%EC%9A%B4-%EC%A0%90)
+1. [웹서비스 소개](https://github.com/sovus3/ASAP#-%EC%9B%B9%EC%84%9C%EB%B9%84%EC%8A%A4-%EC%86%8C%EA%B0%9C)
+4. [개발기간](https://github.com/sovus3/ASAP#-%EA%B0%9C%EB%B0%9C-%EA%B8%B0%EA%B0%84)
+5. [기술스택](https://github.com/sovus3/ASAP#-%EA%B8%B0%EC%88%A0-%EC%8A%A4%ED%83%9D)
+6. [주요기능](https://github.com/sovus3/ASAP#%EF%B8%8F-%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5)
+7. [프로젝트구성도](https://github.com/sovus3/ASAP#%EF%B8%8F-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B5%AC%EC%84%B1%EB%8F%84)
+8. [UCC영상](https://github.com/sovus3/ASAP#-ucc%EC%98%81%EC%83%81)
+9. [팀소개](https://github.com/sovus3/ASAP#-%ED%8C%80-%EC%86%8C%EA%B0%9C)
+10. [프로젝트 후기 및 아쉬운 점](https://github.com/sovus3/ASAP#-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9B%84%EA%B8%B0-%EB%B0%8F-%EC%95%84%EC%89%AC%EC%9A%B4-%EC%A0%90)
 <br/>
 
 ## 🔊 웹서비스 소개
@@ -78,7 +78,7 @@ ASAP은 무명 작가들의 홍보 및 수익 파이프라인 확대를 위한 �
 ## 🗂️ 프로젝트 구성도
 - **기능 조직도(사용자/관리자)**<br/>
 <img src="./README.assets/foChart(user).png" width="400" height="250">
-<img src="./README.assets/foChart(admin).png" width="410" height="230"><br/><br/>
+<img src="./README.assets/foChart(admin).png" width="400" height="250"><br/><br/>
 
 - **시스템 아키텍처(System Architecture)**
 <img src="./README.assets/SystemArchitecture.png">
