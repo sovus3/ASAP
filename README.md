@@ -87,7 +87,7 @@ ASAP은 무명 작가들의 홍보 및 수익 파이프라인 확대를 위한 �
 <img src="./README.assets/ERD.png">
 
 ## 📷 UCC영상
-[![Asap](./README.assets/ASAPIntro.png)](https://youtu.be/uaQWlsQ-05g)
+[![Asap](./README.assets/ASAP_Intro2.png)](https://youtu.be/uaQWlsQ-05g)
 
 ## 👩‍👧‍👦 팀 소개
 <img src="./README.assets/TeamIntro.png" width="800" height="450">
