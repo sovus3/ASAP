@@ -72,7 +72,7 @@ ASAP은 무명 작가들의 홍보 및 수익 파이프라인 확대를 위한 �
 - **관리자 페이지의 전 기능의 내역 조회 및 각종 업로드 기능**<br/>
 ```
 관리자 페이지는 전체적인 관리를 위해 회원 관리, 투표 관리, 경매 관리 등 전체 기능에 대한 내역 조회가 가능하다.
-부가적으로 회원관리에서 포인트 지급 및 작가 신청 승인 및 투표 신청 승인, 경매 작품 업로드 등이 가능하다.
+부가적으로 포인트 지급 및 작가 신청 승인, 투표 신청 승인 및 경매 작품 업로드 등과 같은 각족 업로드가 가능하다.
 ```
 
 ## 🗂️ 프로젝트 구성도
@@ -87,7 +87,7 @@ ASAP은 무명 작가들의 홍보 및 수익 파이프라인 확대를 위한 �
 <img src="./README.assets/ERD.png">
 
 ## 📷 UCC영상
-[![Asap](./README.assets/ASAP_Intro.png)](https://youtu.be/uaQWlsQ-05g?0s)
+[![Asap](./README.assets/ASAP_Intro.png)](https://youtu.be/uaQWlsQ-05g?t=0s)
 
 ## 👩‍👧‍👦 팀 소개
 <img src="./README.assets/TeamIntro.png" width="800" height="450">
