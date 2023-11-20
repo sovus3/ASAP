@@ -83,7 +83,7 @@ ASAP은 무명 작가들의 홍보 및 수익 파이프라인 확대를 위한 �
 </div>
 
 - **시스템 아키텍처(System Architecture)**
-<img src="./README.assets/SystemArchitecture.png">
+<img src="./README.assets/ProjectArchitecture.png">
 
 - **ERD**<br/>
 <img src="./README.assets/ERD.png">
