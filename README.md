@@ -79,7 +79,7 @@ ASAP은 무명 작가들의 홍보 및 수익 파이프라인 확대를 위한 �
 - **기능 조직도(사용자/관리자)**<br/>
 <div>
 <img src="./README.assets/foChart(user).png" width="400" height="250">
-<img src="./README.assets/foChart(admin).png" width="410" height="220"><br/><br/>
+<img src="./README.assets/foChart(admin).png" width="400" height="230"><br/><br/>
 </div>
 
 - **시스템 아키텍처(System Architecture)**
